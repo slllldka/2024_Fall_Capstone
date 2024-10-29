@@ -4,7 +4,7 @@ from rest_framework import viewsets
 from .serializers import UserSerializer
 
 from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
+from .models import User
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -24,8 +24,9 @@ class UserViewSet(viewsets.ModelViewSet):
 def signup(request):
     username = request.data.get('username')
     password = request.data.get('password')
+    phonenumber = request.data.get('phonenumber')
     try:
-        user = User.objects.create_user(username=username, password=password)
+        user = User.objects.create_user(username=username, password=password, phonenumber=phonenumber)
         return Response({'success':True, 'message': 'User created successfully!'}, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -38,9 +39,9 @@ def login(request):
     if(user is not None):
         refresh_token = RefreshToken.for_user(user)
         access_token = refresh_token.access_token
-        return Response({'success':True, 'access':str(access_token), 'refresh':str(refresh_token)})
+        return Response({'success':True, 'id':user.id, 'access':str(access_token), 'refresh':str(refresh_token)})
     else:
-        return Response({'success':False})
+        return Response(status = status.HTTP_401_UNAUTHORIZED)
     
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
