@@ -1,11 +1,11 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "module": "es2015",
+    "module": "commonjs",
     "strict": true,
     "jsx": "react",
     "esModuleInterop": true,
+    "moduleResolution": "node16",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".", // 프로젝트 루트 디렉토리를 baseUrl로 설정
@@ -13,6 +13,6 @@
       "@/*": ["src/*"] // 예시: src 디렉토리를 @로 alias 설정
     }
   },
-  "include": ["src/**/*"],
+//  "include": ["src/**/*"],
   "exclude": ["node_modules", "build"]
 }
