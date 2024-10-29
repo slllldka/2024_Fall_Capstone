@@ -4,15 +4,12 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 class CustomMananger(BaseUserManager):
-    def create_user(self, email, password = None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        if password:
-            user.set_password(password)
-        user.save(using=self._db)
-        return user
+    def create_user(self, password = None, **extra_fields):
+            user = self.model(**extra_fields)
+            if password:
+                user.set_password(password)
+            user.save(using=self._db)
+            return user
     
     #  Create a superuser
     def create_superuser(self, email, password=None, **extra_fields):
