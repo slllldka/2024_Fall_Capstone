@@ -13,6 +13,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+
+from django.utils import timezone
 # Create your views here.
 
 
@@ -22,23 +24,30 @@ class UserViewSet(viewsets.ModelViewSet):
     
 @api_view(['POST'])
 def signup(request):
-    username = request.data.get('username')
+    email = request.data.get('email')
     password = request.data.get('password')
-    phonenumber = request.data.get('phonenumber')
+    first_name = request.data.get('first_name')
+    last_name = request.data.get('last_name')
+    gender = request.data.get('gender')
+    vegan = request.data.get('vegan')
+    ###phonenumber = request.data.get('phonenumber')
     try:
-        user = User.objects.create_user(username=username, password=password, phonenumber=phonenumber)
+        user = User.objects.create_user(email=email, password=password, first_name=first_name,
+                                        last_name=last_name, gender=gender, vegan=vegan) ###, phonenumber=phonenumber)
         return Response({'success':True, 'message': 'User created successfully!'}, status=status.HTTP_201_CREATED)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(['POST'])
 def login(request):
-    username = request.data.get('username')
+    email = request.data.get('email')
     password = request.data.get('password')
-    user = authenticate(request, username = username, password = password)
+    user = authenticate(request, email = email, password = password)
     if(user is not None):
         refresh_token = RefreshToken.for_user(user)
         access_token = refresh_token.access_token
+        user.last_login = timezone.now()
+        user.save()
         return Response({'success':True, 'id':user.id, 'access':str(access_token), 'refresh':str(refresh_token)})
     else:
         return Response(status = status.HTTP_401_UNAUTHORIZED)
@@ -46,7 +55,7 @@ def login(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def valid(request):
-    return Response({'success':True, 'username':request.user.username})
+    return Response({'success':True, 'email':request.user.email})
 
 @api_view(['POST'])
 def refresh(request):
