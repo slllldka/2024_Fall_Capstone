@@ -13,7 +13,8 @@ urlpatterns = [
     path('keyword', foodKeyword, name='foodKeyword'),
     path('ingredient_by_food', getIngredientByFood, name='getIngredientByFood'),
     path('food_by_ingredient', getFoodByIngredient, name='getFoodByIngredient'),
-    path('food_ingredient', foodIngredient, name='foodIngredient')
+    path('food_ingredient', foodIngredient, name='foodIngredient'),
+    path('check_vegan', checkVegan, name='checkVegan'),
     ###path('login', login, name = 'login'),
     ###path('user/id/<int:id>', UserID.as_view(),name ='id')
 ]

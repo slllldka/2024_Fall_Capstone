@@ -143,3 +143,16 @@ def foodIngredient(request):
         except IntegrityError:
             return Response({'error':'already exist'}, status = status.HTTP_409_CONFLICT)
     return Response({'success':True})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def checkVegan(request):
+    isVegan = request.user.vegan
+    if not isVegan:
+        return Response({'vegan':isVegan})
+    else:
+        vegan_food_list = []
+        vegan_food_set = Food.objects.filter(vegan = isVegan).values('name')
+        for vegan_food_name in vegan_food_set:
+            vegan_food_list.append(vegan_food_name['name'])
+        return Response({'vegan':isVegan, 'foods':vegan_food_list})
