@@ -9,6 +9,11 @@ router = routers.DefaultRouter() #DefaultRouter를 설정
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('user_allergy', userAllergy, name='userAllergy'),
+    path('keyword', foodKeyword, name='foodKeyword'),
+    path('ingredient_by_food', getIngredientByFood, name='getIngredientByFood'),
+    path('food_by_ingredient', getFoodByIngredient, name='getFoodByIngredient'),
+    path('food_ingredient', foodIngredient, name='foodIngredient')
     ###path('login', login, name = 'login'),
     ###path('user/id/<int:id>', UserID.as_view(),name ='id')
 ]

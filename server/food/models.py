@@ -3,7 +3,7 @@ from account.models import *
 # Create your models here.
 
 class Allergy(models.Model):
-  name = models.CharField(max_length=30)
+  name = models.CharField(max_length=30, unique=True)
 
 class UserAllergy(models.Model):
   user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
@@ -15,7 +15,7 @@ class UserAllergy(models.Model):
       ]
 
 class Food(models.Model):
-  name = models.CharField(max_length=30)
+  name = models.CharField(max_length=30, unique=True)
   calorie = models.IntegerField()
   carbohydrate = models.IntegerField()
   protein = models.IntegerField()
@@ -23,7 +23,7 @@ class Food(models.Model):
   vegan = models.BooleanField(default=False)
 
 class Ingredient(models.Model):
-  name = models.CharField(max_length=30)
+  name = models.CharField(max_length=30, unique=True)
 
 class IngredientInFood(models.Model):
   ingredient_id = models.ForeignKey(Ingredient, to_field = 'id', on_delete=models.CASCADE)

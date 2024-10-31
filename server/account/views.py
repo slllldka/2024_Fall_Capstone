@@ -61,7 +61,7 @@ def valid(request):
 def refresh(request):
     refreshStr = request.data.get('refresh')
     if refreshStr is None:
-        return Response({'error':'need refresh token'}, status = 400)
+        return Response({'error':'need refresh token'}, status = status.HTTP_400_BAD_REQUEST)
     else:
         try:
             refresh_token = RefreshToken(refreshStr)
@@ -69,4 +69,4 @@ def refresh(request):
             return Response({'access':str(access_token)})
         
         except TokenError:
-            Response({'error':'expired refresh token'}, status = 401)
+            Response({'error':'expired refresh token'}, status = status.HTTP_401_UNAUTHORIZED)
