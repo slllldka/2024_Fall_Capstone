@@ -1,30 +1,31 @@
+// Update in Register.tsx
+
 import React from 'react';
-import {Text, TextInput, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
+import {Text, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
 import postForm from '../../axios/postForm';
 import {useNavigation} from '@react-navigation/native';
+import InputBtn from '../../components/InputBtn'; // Adjust the import path as necessary
 
 const Register: React.FC = () => {
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation();
 
   const [form, setForm] = React.useState({
-    username: '',
-    password: '',
     email: '',
+    password: '',
     firstName: '',
     lastName: '',
-    phonenumber: '',
     gender: '',
+    vegan: false,
   });
 
   const setFormnull = () => {
     setForm({
-      username: '',
-      password: '',
       email: '',
+      password: '',
       firstName: '',
       lastName: '',
-      phonenumber: '',
       gender: '',
+      vegan: false,
     });
   };
 
@@ -48,35 +49,31 @@ const Register: React.FC = () => {
         </TouchableOpacity>
       </SafeAreaView>
 
-      <SafeAreaView style={styles.inputbtn}>
-        <TextInput
+      <SafeAreaView style={styles.body}>
+        <InputBtn placeholder='email' onChangeText={value => handleChange('email', value)} />
+
+        <InputBtn
           placeholder='비밀번호'
           secureTextEntry
           onChangeText={value => handleChange('password', value)}
-          autoCapitalize='none'
         />
-        <TextInput
-          placeholder='아이디'
-          onChangeText={value => handleChange('username', value)}
-          autoCapitalize='none'
+
+        <InputBtn
+          placeholder='First Name'
+          onChangeText={value => handleChange('firstName', value)}
         />
-        <TextInput
-          placeholder='email'
-          onChangeText={value => handleChange('email', value)}
-          autoCapitalize='none'
-        />
-        <TextInput
-          placeholder='핸드폰번호'
-          onChangeText={value => handleChange('phonenumber', value)}
-          autoCapitalize='none'
-        />
+        <InputBtn placeholder='Last Name' onChangeText={value => handleChange('lastName', value)} />
+        <InputBtn placeholder='성별' onChangeText={value => handleChange('gender', value)} />
+        <InputBtn placeholder='비건' onChangeText={value => handleChange('vegan', value)} />
       </SafeAreaView>
+
       <TouchableOpacity onPress={handleSubmit}>
         <Text>회원가입</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -84,7 +81,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#262626',
   },
-
+  body: {
+    flex: 45,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   logo: {
     flex: 55,
     width: '100%',
@@ -92,24 +94,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginBottom: 50,
   },
-  signup: {
-    flex: 50,
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   textlink: {
     marginTop: 40,
     marginLeft: 30,
-    color: '#1E1E1E',
+    color: '#f3f3f3',
     fontSize: 19,
     fontWeight: 'bold',
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // 배경 흐리게 처리
   },
 });
 
