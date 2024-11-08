@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, button, TextInput, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
+import {Text, TextInput, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
 import postForm from '../../axios/postForm';
 import {useNavigation} from '@react-navigation/native';
 
@@ -34,7 +34,7 @@ const Register: React.FC = () => {
 
   const handleSubmit = async () => {
     const response = await postForm(form);
-    if (response.status === 200) {
+    if (response.status === 201) {
       navigation.navigate('Login');
     }
     setFormnull();
@@ -56,11 +56,24 @@ const Register: React.FC = () => {
           autoCapitalize='none'
         />
         <TextInput
-          placeholder='닉네임'
+          placeholder='아이디'
           onChangeText={value => handleChange('username', value)}
           autoCapitalize='none'
         />
+        <TextInput
+          placeholder='email'
+          onChangeText={value => handleChange('email', value)}
+          autoCapitalize='none'
+        />
+        <TextInput
+          placeholder='핸드폰번호'
+          onChangeText={value => handleChange('phonenumber', value)}
+          autoCapitalize='none'
+        />
       </SafeAreaView>
+      <TouchableOpacity onPress={handleSubmit}>
+        <Text>회원가입</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -69,7 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5F5EB',
+    backgroundColor: '#262626',
   },
 
   logo: {
