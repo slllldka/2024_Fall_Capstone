@@ -1,13 +1,19 @@
 import React from 'react';
-import {Text, StyleSheet, SafeAreaView, TouchableOpacity, View} from 'react-native';
+import {Text, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
-import postForm from '../../axios/postForm';
+import postForm from '../../axios/auth/postForm.tsx';
 import {useNavigation} from '@react-navigation/native';
 import InputBtn from '../../components/InputBtn'; // Adjust the import path as necessary
-import BlueBtn from '../../components/BlueBtn'; // Adjust the import path as necessary
+import BlueBtn from '../../components/BlueBtn';
+import {StackNavigationProp} from '@react-navigation/stack'; // Adjust the import path as necessary
+
+type RootStackParamList = {
+  Login: undefined;
+  Register: undefined;
+};
 
 const Register: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const [form, setForm] = React.useState({
     email: '',
@@ -18,13 +24,15 @@ const Register: React.FC = () => {
     vegan: false,
   });
 
-  const handleChange = (name: string, value: any) => {
+  const handleChange = (name: string, value: string | boolean) => {
     setForm({...form, [name]: value});
   };
 
   const handleSubmit = async () => {
     console.log(form);
-    const response = await postForm(form);
+    const response = await postForm('account/signup', form);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     if (response.status === 201) {
       navigation.navigate('Login');
     }
