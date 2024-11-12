@@ -156,3 +156,32 @@ def checkVegan(request):
         for vegan_food_name in vegan_food_set:
             vegan_food_list.append(vegan_food_name['name'])
         return Response({'vegan':isVegan, 'foods':vegan_food_list})
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def foodText(request):
+    text = request.data.get('text')
+    #TODO
+    return Response({'text':text, 'foods':['list', 'of', 'foods']})
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def fridgeImage(request):
+    if request.method == 'GET':
+        user_id = request.user.id
+        try:
+            image = UserFridgeImage.objects.filter(user_id=user_id).values('base64image').get()
+        except UserFridgeImage.DoesNotExist:
+            return Response({'error':'fridge image does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'image':image['base64image']})
+    elif request.method == 'POST':
+        user = request.user
+        image = request.data.get('image')
+        try:
+            userImage = UserFridgeImage.objects.get(user_id=user.id)
+            userImage.base64image = image
+            userImage.save()
+        except UserFridgeImage.DoesNotExist:
+            UserFridgeImage.objects.create(user_id=user, base64image=image)
+        
+        return Response({'success':True})
