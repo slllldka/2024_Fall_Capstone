@@ -1,10 +1,10 @@
-// Update in Register.tsx
-
 import React from 'react';
-import {Text, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
+import {Text, StyleSheet, SafeAreaView, TouchableOpacity, View} from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
 import postForm from '../../axios/postForm';
 import {useNavigation} from '@react-navigation/native';
 import InputBtn from '../../components/InputBtn'; // Adjust the import path as necessary
+import BlueBtn from '../../components/BlueBtn'; // Adjust the import path as necessary
 
 const Register: React.FC = () => {
   const navigation = useNavigation();
@@ -18,34 +18,23 @@ const Register: React.FC = () => {
     vegan: false,
   });
 
-  const setFormnull = () => {
-    setForm({
-      email: '',
-      password: '',
-      firstName: '',
-      lastName: '',
-      gender: '',
-      vegan: false,
-    });
-  };
-
-  const handleChange = (name: string, value: string) => {
+  const handleChange = (name: string, value: any) => {
     setForm({...form, [name]: value});
   };
 
   const handleSubmit = async () => {
+    console.log(form);
     const response = await postForm(form);
     if (response.status === 201) {
       navigation.navigate('Login');
     }
-    setFormnull();
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <SafeAreaView style={styles.logo}>
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.textlink}>뒤로 가기</Text>
+          <Text style={styles.text}>뒤로 가기</Text>
         </TouchableOpacity>
       </SafeAreaView>
 
@@ -63,13 +52,28 @@ const Register: React.FC = () => {
           onChangeText={value => handleChange('firstName', value)}
         />
         <InputBtn placeholder='Last Name' onChangeText={value => handleChange('lastName', value)} />
-        <InputBtn placeholder='성별' onChangeText={value => handleChange('gender', value)} />
-        <InputBtn placeholder='비건' onChangeText={value => handleChange('vegan', value)} />
-      </SafeAreaView>
 
-      <TouchableOpacity onPress={handleSubmit}>
-        <Text>회원가입</Text>
-      </TouchableOpacity>
+        <SafeAreaView style={styles.checkboxContainer}>
+          <CheckBox
+            value={form.gender === '남'}
+            onValueChange={value => handleChange('gender', value ? '남' : '')}
+          />
+          <Text style={styles.label}>남</Text>
+          <CheckBox
+            value={form.gender === '여'}
+            onValueChange={value => handleChange('gender', value ? '여' : '')}
+          />
+          <Text style={styles.label}>여</Text>
+        </SafeAreaView>
+
+        <SafeAreaView style={styles.checkboxContainer}>
+          <CheckBox value={form.vegan} onValueChange={value => handleChange('vegan', value)} />
+          <Text style={styles.label}>비건 여부</Text>
+        </SafeAreaView>
+      </SafeAreaView>
+      <SafeAreaView style={styles.confirm}>
+        <BlueBtn title='회원가입' onPress={handleSubmit} />
+      </SafeAreaView>
     </SafeAreaView>
   );
 };
@@ -77,29 +81,42 @@ const Register: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+
     backgroundColor: '#262626',
   },
   body: {
-    flex: 45,
+    flex: 90,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 60,
   },
   logo: {
-    flex: 55,
+    flex: 10,
     width: '100%',
     alignItems: 'baseline',
     justifyContent: 'flex-start',
-    marginBottom: 50,
   },
-  textlink: {
+  text: {
     marginTop: 40,
     marginLeft: 30,
     color: '#f3f3f3',
     fontSize: 19,
     fontWeight: 'bold',
+  },
+  confirm: {
+    flex: 15,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  label: {
+    margin: 10,
+    color: '#fff',
   },
 });
 

@@ -31,12 +31,12 @@ const InputBtn: React.FC<InputBtnProps> = ({
 const styles = StyleSheet.create({
   input: {
     width: '85%',
-    height: 45,
-    borderRadius: 8,
+    height: 55,
+    borderRadius: 12,
     paddingHorizontal: 15,
     marginBottom: 15,
     color: '#fff',
-    backgroundColor: '#333',
+    backgroundColor: '#4c4c4c',
   },
 });
 
