@@ -48,7 +48,12 @@ def login(request):
         access_token = refresh_token.access_token
         user.last_login = timezone.now()
         user.save()
-        return Response({'success':True, 'id':user.id, 'access':str(access_token), 'refresh':str(refresh_token)})
+        
+        return Response({'success':True, 'id':user.id, 'access':str(access_token), 'refresh':str(refresh_token)
+                         , 'registered_allergy':user.registered_allergy})
+            
+        
+        
     else:
         return Response(status = status.HTTP_401_UNAUTHORIZED)
     

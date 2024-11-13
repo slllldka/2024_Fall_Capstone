@@ -17,6 +17,7 @@ urlpatterns = [
     path('check_vegan', checkVegan, name='checkVegan'),
     path('food_text', foodText, name='foodText'),
     path('fridge_image', fridgeImage, name='fridgeImage'),
+    path('select_food', selectFood, name='selectFood'),
     ###path('login', login, name = 'login'),
     ###path('user/id/<int:id>', UserID.as_view(),name ='id')
 ]

@@ -47,6 +47,8 @@ def userAllergy(request):
                 UserAllergy.objects.create(user_id=user, allergy_id=allergy)
             except IntegrityError:
                 return Response({'error':'already exist'}, status = status.HTTP_409_CONFLICT)
+        user.registered_allergy = True
+        user.save()
         return Response({'success':True})
 
 @api_view(['GET', 'POST'])
@@ -173,7 +175,7 @@ def fridgeImage(request):
             image = UserFridgeImage.objects.filter(user_id=user_id).values('base64image').get()
         except UserFridgeImage.DoesNotExist:
             return Response({'error':'fridge image does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        return Response({'image':image['base64image']})
+        return Response({'success':True})
     elif request.method == 'POST':
         user = request.user
         image = request.data.get('image')
@@ -185,3 +187,48 @@ def fridgeImage(request):
             UserFridgeImage.objects.create(user_id=user, base64image=image)
         
         return Response({'success':True})
+    
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def selectFood(request):
+    if request.method == 'GET':
+        user_id = request.user.id
+        #food list, date_time list seperately
+        try:
+            food_list = []
+            date_time_list = []
+            food_date_time_set = SelectedFood.objects.filter(user_id=user_id).values('food_id', 'date_time')
+            for food_date_time in food_date_time_set:
+                food = Food.objects.get(id=food_date_time['food_id'])
+                food_list.append(food.name)
+                date_time_list.append(food_date_time['date_time'])
+                #date_time_list.append(timezone.localtime(food_date_time['date_time']))
+            return Response({'foods':food_list, 'date_times':date_time_list})
+            
+        except SelectedFood.DoesNotExist:
+            return Response({'error':'foods do not exist'}, status=status.HTTP_404_NOT_FOUND)
+        
+        '''
+        try:
+            food__date_time_list = []
+            food_date_time_set = SelectedFood.objects.filter(user_id=user_id).values('food_id', 'date_time')
+            for food_date_time in food_date_time_set:
+                
+            
+        except SelectedFood.DoesNotExist:
+            return Response({'error':'foods do not exist'}, status=status.HTTP_404_NOT_FOUND)
+        '''
+    elif request.method == 'POST':
+        user = request.user
+        food_name = request.data.get('food')
+        
+        #if food_name is None:
+        #    return Response({"success":True})
+        #else:
+        try:
+            food = Food.objects.get(name=food_name)
+            SelectedFood.objects.create(user_id = user, food_id = food)
+            return Response({"success":True})
+        except Food.DoesNotExist:
+            return Response({'error':'food is wrong'}, status=status.HTTP_400_BAD_REQUEST)

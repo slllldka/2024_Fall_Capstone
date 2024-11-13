@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+
 from account.models import *
 # Create your models here.
 
@@ -41,4 +43,14 @@ class FoodKeyword(models.Model):
   class Meta:
       constraints = [
           models.UniqueConstraint(fields=['food_id', 'keyword'], name = 'unique_food_id_keyword')
+      ]
+      
+class SelectedFood(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  date_time = models.DateTimeField(default=timezone.now)
+  food_id = models.ForeignKey(Food, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+      constraints = [
+          models.UniqueConstraint(fields=['user_id', 'date_time'], name = 'unique_user_id_date_time_food')
       ]
