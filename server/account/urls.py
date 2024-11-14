@@ -13,5 +13,6 @@ urlpatterns = [
     path('signup', signup, name = 'signup'),
     path('valid', valid, name = 'valid'),
     path('refresh', refresh, name = 'refresh'),
-    path('user/id/<int:id>', UserID.as_view(),name ='id')
+    path('myinfo', myinfo, name = 'myinfo'),
+    path('user/id/<int:id>', UserID.as_view(),name ='id'),
 ]

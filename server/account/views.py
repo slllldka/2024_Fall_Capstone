@@ -14,6 +14,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
+from django.forms.models import model_to_dict
+
 from django.utils import timezone
 # Create your views here.
 
@@ -75,3 +77,9 @@ def refresh(request):
         
         except TokenError:
             Response({'error':'expired refresh token'}, status = status.HTTP_401_UNAUTHORIZED)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def myinfo(request):
+    return Response(model_to_dict(request.user, fields=['email', 'first_name', 'last_name'
+                                                        , 'date_joined', 'last_login', 'gender', 'vegan']))
