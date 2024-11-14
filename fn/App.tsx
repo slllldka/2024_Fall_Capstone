@@ -4,6 +4,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import Login from './src/auth/pages/Login';
 import Register from './src/auth/pages/Register';
 import ChatRoom from './src/chat/ChatRoom';
+import Main from './src/Main';
 
 const Stack = createStackNavigator();
 
@@ -13,6 +14,7 @@ function App() {
       <Stack.Navigator initialRouteName='Chatroom'>
         <Stack.Screen name='Login' component={Login} options={{headerShown: false}} />
         <Stack.Screen name='Register' component={Register} options={{headerShown: false}} />
+        <Stack.Screen name='Main' component={Main} options={{headerShown: false}} />
         <Stack.Screen name='ChatRoom' component={ChatRoom} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>

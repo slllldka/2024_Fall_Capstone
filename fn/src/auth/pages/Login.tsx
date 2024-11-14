@@ -27,7 +27,7 @@ export default function Login(): React.JSX.Element {
   const handleSubmit = async () => {
     console.log(form);
     const response: unknown = await postForm('/account/login', form);
-    navigation.navigate('ChatRoom');
+    navigation.navigate('Main');
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     if (response.status === 201) {
