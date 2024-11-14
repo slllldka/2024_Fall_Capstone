@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, SafeAreaView} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FoodInput from './FoodInput.tsx';
 
 export default function Main(): React.ReactElement {
   const navigation = useNavigation();
@@ -11,20 +12,21 @@ export default function Main(): React.ReactElement {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
-          {/*<Icon name='arrow-back' size={24} color='#ffffff' />*/}
-          <Text style={styles.userText}>Back</Text>
+          <Icon name='arrow-back' size={24} color='#ffffff' />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>FLEX Coach</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Profile')} style={styles.userText}>
-          {/*<Icon name='person-circle' size={24} color='#ffffff' />*/}
-          <Text style={styles.headerTitle}>Profile</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Profile')}
+          style={styles.headerButton}
+        >
+          <Icon name='person-circle' size={24} color='#ffffff' />
         </TouchableOpacity>
       </View>
 
       {/* Box field */}
       <View style={styles.container}>
         <View style={styles.boxRow}>
-          <TouchableOpacity onPress={() => navigation.navigate('ChatRoom')} style={styles.inbox}>
+          <TouchableOpacity onPress={() => navigation.navigate('FoodInput')} style={styles.inbox}>
             <Text style={styles.userText}>IF You ate something?</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => navigation.navigate('ChatRoom')} style={styles.inbox}>
