@@ -26,11 +26,14 @@ export default function ChatRoom(): React.ReactElement {
   const navigation = useNavigation();
 
   const [messages, setMessages] = useState<Message[]>([
-    {id: '1', text: "How's your project going?", sender: 'ai'},
-    {id: '2', text: 'Hi Brooke!', sender: 'user'},
-    {id: '3', text: "It's going well. Thanks for asking!", sender: 'user'},
-    {id: '4', text: 'No worries. Let me know if you need any help 😊', sender: 'ai'},
-    {id: '5', text: "You're the best!", sender: 'user'},
+    {id: '1', text: 'What kind of things you want to eat?', sender: 'ai'},
+    {id: '3', text: 'I want protein for to night!', sender: 'user'},
+    {id: '4', text: 'Click your meal  😊', sender: 'ai'},
+    {id: '4', text: 'chicken breast', sender: 'ai'},
+    {id: '4', text: 'beef steak', sender: 'ai'},
+    {id: '4', text: 'Milk with cereals', sender: 'ai'},
+    {id: '4', text: 'Grilled Mackerel', sender: 'ai'},
+    {id: '4', text: 'I dont want all of them', sender: 'ai'},
   ]);
   const [inputText, setInputText] = useState('');
 

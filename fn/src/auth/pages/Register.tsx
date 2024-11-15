@@ -42,7 +42,7 @@ const Register: React.FC = () => {
     <SafeAreaView style={styles.container}>
       <SafeAreaView style={styles.logo}>
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.text}>뒤로 가기</Text>
+          <Text style={styles.text}>Go back</Text>
         </TouchableOpacity>
       </SafeAreaView>
 
@@ -50,7 +50,7 @@ const Register: React.FC = () => {
         <InputBtn placeholder='email' onChangeText={value => handleChange('email', value)} />
 
         <InputBtn
-          placeholder='비밀번호'
+          placeholder='Password'
           secureTextEntry
           onChangeText={value => handleChange('password', value)}
         />
@@ -66,21 +66,18 @@ const Register: React.FC = () => {
             value={form.gender === '남'}
             onValueChange={value => handleChange('gender', value ? '남' : '')}
           />
-          <Text style={styles.label}>남</Text>
+          <Text style={styles.label}>Man</Text>
           <CheckBox
             value={form.gender === '여'}
             onValueChange={value => handleChange('gender', value ? '여' : '')}
           />
-          <Text style={styles.label}>여</Text>
-        </SafeAreaView>
-
-        <SafeAreaView style={styles.checkboxContainer}>
+          <Text style={styles.label}>Woman</Text>
           <CheckBox value={form.vegan} onValueChange={value => handleChange('vegan', value)} />
-          <Text style={styles.label}>비건 여부</Text>
+          <Text style={styles.label}>Vegan</Text>
         </SafeAreaView>
       </SafeAreaView>
       <SafeAreaView style={styles.confirm}>
-        <BlueBtn title='회원가입' onPress={handleSubmit} />
+        <BlueBtn title='Submit' onPress={handleSubmit} />
       </SafeAreaView>
     </SafeAreaView>
   );
@@ -121,6 +118,8 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: 'row',
     marginBottom: 20,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
   label: {
     margin: 10,

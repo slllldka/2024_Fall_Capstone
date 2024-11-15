@@ -39,7 +39,7 @@ export default function Login(): React.JSX.Element {
     <SafeAreaView style={styles.container}>
       <SafeAreaView style={styles.logo}>
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={styles.text}>로고 화면 </Text>
+          {/*<Text style={styles.text}>로고화면 </Text>*/}
         </TouchableOpacity>
       </SafeAreaView>
 
@@ -47,7 +47,7 @@ export default function Login(): React.JSX.Element {
         <InputBtn placeholder='email' onChangeText={value => handleChange('email', value)} />
 
         <InputBtn
-          placeholder='비밀번호'
+          placeholder='Password'
           secureTextEntry
           onChangeText={value => handleChange('password', value)}
         />
@@ -55,7 +55,7 @@ export default function Login(): React.JSX.Element {
           style={styles.forgotpassword}
           onPress={() => navigation.navigate('Register')}
         >
-          <Text style={styles.label}>Forgot password?</Text>
+          <Text style={styles.label}>First Come?</Text>
         </TouchableOpacity>
         <BlueBtn title='로그인' onPress={handleSubmit} />
       </SafeAreaView>
@@ -101,7 +101,9 @@ const styles = StyleSheet.create({
   },
   label: {
     margin: 10,
-    color: '#fff',
+    color: '#f3f3f3',
+    fontSize: 15,
+    fontWeight: '400',
   },
   forgotpassword: {
     marginLeft: 30,
