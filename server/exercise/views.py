@@ -63,11 +63,14 @@ def bodyMetrics(request):
             userBodyInfo.right_leg_muscle_mass = right_leg_muscle_mass
             userBodyInfo.left_leg_muscle_mass = left_leg_muscle_mass
             userBodyInfo.muscle_goal = muscle_goal
+            userBodyInfo.save()
+            return Response({"success":True})
         except UserBodyInfo.DoesNotExist:
             UserBodyInfo.objects.create(user_id=user, height = height, weight = weight, weight_goal = weight_goal, period_goal = period_goal
                                         , duration = duration, right_arm_muscle_mass = right_arm_muscle_mass, left_arm_muscle_mass = left_arm_muscle_mass
                                         , body_muscle_mass = body_muscle_mass, right_leg_muscle_mass = right_leg_muscle_mass
                                         , left_leg_muscle_mass = left_leg_muscle_mass, muscle_goal = muscle_goal)
+            return Response({"success":True}, status=status.HTTP_201_CREATED)
 
 #getm post done exercise
 @api_view(['GET', 'POST'])
@@ -81,11 +84,11 @@ def doneExercise(request):
         doneExerciseSet = UserExercise.objects.filter(user_id = user.id).values('exercise_id', 'date_time', 'duration')
         for doneExercise in doneExerciseSet:
             #only name
-            exercise_list.append(Exercise.objects.get(exercise_id=doneExercise['exercise_id']).name)
+            #exercise_list.append(Exercise.objects.get(id=doneExercise['exercise_id']).name)
             #all info(name, muscle_part, calorie per hour or set, setnum)
-            #exercise_list.append(model_to_dict(Exercise.objects.get(exercise_id=doneExercise['exercise_id'])))
+            exercise_list.append(model_to_dict(Exercise.objects.get(id=doneExercise['exercise_id'])))
             date_time_list.append(doneExercise['date_time'])
-            duration_list.append(doneExerciseSet['duration'])
+            duration_list.append(doneExercise['duration'])
         return Response({'exercises':exercise_list, 'date_times':date_time_list, 'durations':duration_list})
     elif request.method == 'POST':
         exercise_name = request.data.get('exercise')
