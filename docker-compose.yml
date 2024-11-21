@@ -1,0 +1,45 @@
+version: "3.8"
+services:
+  react_native:
+    build:
+      context: .
+      dockerfile: Dockerfile.react
+    volumes:
+      - ./fn:/app
+      - /app/node_modules
+    ports:
+      - "8081:8081"
+    stdin_open: true
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+  django_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.django
+    volumes:
+      - ./server:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres_db
+    environment:
+      - DJANGO_SETTINGS_MODULE=server.settings
+      - PYTHONUNBUFFERED=1
+      - DATABASE_URL=postgresql://postgres:postgres@postgres_db:5432/postgres
+      - DEBUG=True
+
+  postgres_db:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:

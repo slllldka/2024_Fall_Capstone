@@ -1,0 +1,33 @@
+# Base image
+FROM python:3.11
+
+# Set the working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y netcat-openbsd
+
+# Copy requirements first for better caching
+COPY ./server/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the Django project
+COPY ./server .
+
+# Copy settings.example.py to settings.py if needed
+RUN if [ ! -f server/settings.py ]; then cp server/settings.example.py server/settings.py; fi
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=server.settings
+ENV DATABASE_HOST=postgres_db
+ENV DATABASE_PORT=5432
+
+# Make sure manage.py is executable
+RUN chmod +x manage.py
+
+# Expose port
+EXPOSE 8000
+
+# Wait for database and run migrations
+CMD ["sh", "-c", "while ! nc -z postgres_db 5432; do sleep 1; done; python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
