@@ -12,6 +12,7 @@ import {
   SafeAreaView,
   Animated,
 } from 'react-native';
+
 import {useNavigation} from '@react-navigation/native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import LinearGradient from 'react-native-linear-gradient'; // Linear Gradient 사용

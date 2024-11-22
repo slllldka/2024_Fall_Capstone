@@ -17,4 +17,4 @@ COPY ./fn .
 EXPOSE 8081
 
 # Start the React Native development server
-CMD ["npm", "start"]
+CMD ["npm", "start", "ios"]

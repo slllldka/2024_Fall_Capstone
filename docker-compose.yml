@@ -1,17 +1,17 @@
 version: "3.8"
 services:
-  react_native:
-    build:
-      context: .
-      dockerfile: Dockerfile.react
-    volumes:
-      - ./fn:/app
-      - /app/node_modules
-    ports:
-      - "8081:8081"
-    stdin_open: true
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+#  react_native:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile.react
+#    volumes:
+#      - ./fn:/app
+#      - /app/node_modules
+#    ports:
+#      - "8081:8081"
+#    stdin_open: true
+#    environment:
+#      - CHOKIDAR_USEPOLLING=true
 
   django_server:
     build:

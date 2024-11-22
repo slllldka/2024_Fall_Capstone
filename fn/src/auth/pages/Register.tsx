@@ -18,8 +18,8 @@ const Register: React.FC = () => {
   const [form, setForm] = React.useState({
     email: '',
     password: '',
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     gender: '',
     vegan: false,
   });
@@ -31,8 +31,10 @@ const Register: React.FC = () => {
   const handleSubmit = async () => {
     console.log(form);
     const response = await postForm('account/signup', form);
+    console.log(response);
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
+
     if (response.status === 201) {
       navigation.navigate('Login');
     }
@@ -57,9 +59,12 @@ const Register: React.FC = () => {
 
         <InputBtn
           placeholder='First Name'
-          onChangeText={value => handleChange('firstName', value)}
+          onChangeText={value => handleChange('first_name', value)}
         />
-        <InputBtn placeholder='Last Name' onChangeText={value => handleChange('lastName', value)} />
+        <InputBtn
+          placeholder='Last Name'
+          onChangeText={value => handleChange('last_name', value)}
+        />
 
         <SafeAreaView style={styles.checkboxContainer}>
           <CheckBox

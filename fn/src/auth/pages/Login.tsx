@@ -10,6 +10,7 @@ type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   ChatRoom: undefined;
+  Main: undefined;
 };
 
 export default function Login(): React.JSX.Element {
@@ -26,12 +27,14 @@ export default function Login(): React.JSX.Element {
 
   const handleSubmit = async () => {
     console.log(form);
-    const response: unknown = await postForm('/account/login', form);
-    navigation.navigate('Main');
+    const response: unknown = await postForm('account/login', form);
+    console.log(response);
+    // navigation.navigate('Main');
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
-    if (response.status === 201) {
-      navigation.navigate('Login');
+
+    if (response.status === 200) {
+      navigation.navigate('Main');
     }
   };
 

@@ -1523,6 +1523,8 @@ PODS:
     - React-logger (= 0.75.4)
     - React-perflogger (= 0.75.4)
     - React-utils (= 0.75.4)
+  - RNCAsyncStorage (2.1.0):
+    - React-Core
   - RNCCheckbox (0.5.17):
     - BEMCheckBox (~> 1.4)
     - React-Core
@@ -1664,6 +1666,7 @@ DEPENDENCIES:
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNCCheckbox (from `../node_modules/@react-native-community/checkbox`)"
   - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -1807,6 +1810,8 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNCCheckbox:
     :path: "../node_modules/@react-native-community/checkbox"
   RNCPicker:
@@ -1888,6 +1893,7 @@ SPEC CHECKSUMS:
   React-utils: cbe8b8b3d7b2ac282e018e46f0e7b25cdc87c5a0
   ReactCodegen: 4bcb34e6b5ebf6eef5cee34f55aa39991ea1c1f1
   ReactCommon: 6a952e50c2a4b694731d7682aaa6c79bc156e4ad
+  RNCAsyncStorage: cc6479c4acd84cc7004946946c8afe30b018184d
   RNCCheckbox: a3ca9978cb0846b981d28da4e9914bd437403d77
   RNCPicker: f963e01f78e546a93b98aa201501713dbda14e94
   RNGestureHandler: 511250b190a284388f9dd0d2e56c1df76f14cfb8
