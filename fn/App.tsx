@@ -7,6 +7,7 @@ import ChatRoom from './src/chat/ChatRoom';
 import Main from './src/mainpage/Main.tsx';
 import FoodInput from './src/mainpage/FoodInput.tsx';
 import ChartPage from './src/chart/ChartPage.tsx';
+import Profile from './src/profile/Profile.tsx';
 
 const Stack = createStackNavigator();
 
@@ -20,6 +21,7 @@ function App() {
         <Stack.Screen name='ChatRoom' component={ChatRoom} options={{headerShown: false}} />
         <Stack.Screen name='FoodInput' component={FoodInput} options={{headerShown: false}} />
         <Stack.Screen name='ChartPage' component={ChartPage} options={{headerShown: false}} />
+        <Stack.Screen name='Profile' component={Profile} options={{headerShown: false}} />
       </Stack.Navigator>
     </NavigationContainer>
   );

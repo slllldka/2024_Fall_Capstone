@@ -1,10 +1,19 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, SafeAreaView} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
+// import Icon from 'react-native-vector-icons/Ionicons';
+import {StackNavigationProp} from '@react-navigation/stack';
+
+type RootStackParamList = {
+  Main: undefined;
+  Profile: undefined;
+  FoodInput: undefined;
+  ChatRoom: undefined;
+  ChartPage: undefined;
+};
 
 export default function Main(): React.ReactElement {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   return (
     <SafeAreaView style={styles.safeArea}>
