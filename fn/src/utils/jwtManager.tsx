@@ -44,14 +44,11 @@ class JWTManager {
   // 토큰 삭제 (로그아웃 시)
   static async clearTokens(): Promise<void> {
     try {
-      await AsyncStorage.multiRemove([
-        this.ACCESS_TOKEN_KEY,
-        this.REFRESH_TOKEN_KEY,
-      ]);
+      await AsyncStorage.multiRemove([this.ACCESS_TOKEN_KEY, this.REFRESH_TOKEN_KEY]);
     } catch (error) {
       console.error('토큰 삭제 실패:', error);
     }
   }
 }
 
-export default JWTManager; 
+export default JWTManager;

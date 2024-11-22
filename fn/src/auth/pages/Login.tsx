@@ -1,10 +1,12 @@
 import React from 'react';
 import {Text, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import postForm from '../../axios/auth/postForm.tsx';
+// import postForm from '../../axios/auth/postForm.tsx';
 import {useNavigation} from '@react-navigation/native';
 import InputBtn from '../../components/InputBtn'; // Adjust the import path as necessary
 import BlueBtn from '../../components/BlueBtn'; // Adjust the import path as necessary
+import JWTManager from '../../utils/jwtManager.tsx';
+import api from '../../api/axiosConfig.tsx';
 
 type RootStackParamList = {
   Login: undefined;
@@ -26,14 +28,15 @@ export default function Login(): React.JSX.Element {
   };
 
   const handleSubmit = async () => {
-    console.log(form);
-    const response: unknown = await postForm('account/login', form);
-    console.log(response);
-    // navigation.navigate('Main');
+    const response = await api.post('/account/login', form);
+    console.log(response.headers);
+
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
 
     if (response.status === 200) {
+      const {access, refresh} = response.data;
+      await JWTManager.setTokens({access, refresh});
+
       navigation.navigate('Main');
     }
   };
