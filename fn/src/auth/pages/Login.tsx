@@ -1,10 +1,9 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Text, StyleSheet, SafeAreaView, TouchableOpacity} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
-// import postForm from '../../axios/auth/postForm.tsx';
 import {useNavigation} from '@react-navigation/native';
-import InputBtn from '../../components/InputBtn'; // Adjust the import path as necessary
-import BlueBtn from '../../components/BlueBtn'; // Adjust the import path as necessary
+import InputBtn from '../../components/InputBtn';
+import BlueBtn from '../../components/BlueBtn';
 import JWTManager from '../../utils/jwtManager.tsx';
 import api from '../../api/axiosConfig.tsx';
 
@@ -23,21 +22,40 @@ export default function Login(): React.JSX.Element {
     password: '',
   });
 
+  useEffect(() => {
+    checkAutoLogin();
+  }, []);
+
+  const checkAutoLogin = async () => {
+    try {
+      const token = await JWTManager.getAccessToken();
+      if (token) {
+        // 토큰 유효성 검증
+        const response = await api.post('/account/valid');
+        if (response.data.success) {
+          navigation.navigate('Main');
+        }
+      }
+    } catch (error) {
+      console.error('자동 로그인 실패:', error);
+    }
+  };
+
   const handleChange = (name: string, value: string) => {
     setForm({...form, [name]: value});
   };
 
   const handleSubmit = async () => {
-    const response = await api.post('/account/login', form);
-    console.log(response.headers);
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-
-    if (response.status === 200) {
-      const {access, refresh} = response.data;
-      await JWTManager.setTokens({access, refresh});
-
-      navigation.navigate('Main');
+    try {
+      const response = await api.post('/account/login', form);
+      
+      if (response.status === 200) {
+        const {access, refresh} = response.data;
+        await JWTManager.setTokens({access, refresh});
+        navigation.navigate('Main');
+      }
+    } catch (error) {
+      console.error('로그인 실패:', error);
     }
   };
 
@@ -51,7 +69,6 @@ export default function Login(): React.JSX.Element {
 
       <SafeAreaView style={styles.body}>
         <InputBtn placeholder='email' onChangeText={value => handleChange('email', value)} />
-
         <InputBtn
           placeholder='Password'
           secureTextEntry
