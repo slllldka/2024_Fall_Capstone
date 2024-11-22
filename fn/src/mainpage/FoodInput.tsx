@@ -1,27 +1,22 @@
 import React, {useState} from 'react';
 import {View, TextInput, Button, StyleSheet, Text} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import api from '../api/axiosConfig.tsx';
+import {StackNavigationProp} from '@react-navigation/stack';
+
+type RootStackParamList = {
+  Main: undefined;
+};
 
 export default function FoodInput(): React.ReactElement {
-  const navigator = useNavigation();
+  const navigator = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [food, setFood] = useState('');
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // const response = await api.post('/food/select_food', {food});
+    // console.log(response);
+
     navigator.navigate('Main');
-    // fetch('/food/select_food', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({food}),
-    // })
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     console.log('Food submitted:', data);
-    //   })
-    //   .catch(error => {
-    //     console.error('Error:', error);
-    //   });
   };
 
   return (
