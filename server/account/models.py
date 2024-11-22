@@ -31,6 +31,11 @@ class User(AbstractUser):
     gender = models.CharField(default='male', max_length=6)
     vegan = models.BooleanField(default=False)
     registered_allergy = models.BooleanField(default=False)
+    exercise_main_plan_type = models.IntegerField(default=0)
+    exercise_add_plan_type = models.IntegerField(default=0)
+    exercise_main_plan_idx = models.IntegerField(default=0)
+    exercise_add_plan_idx = models.IntegerField(default=0)
+    chest_recent = models.BooleanField(default=False)
     
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -41,16 +46,14 @@ class UserBodyInfo(models.Model):
   user_id = models.OneToOneField(User, to_field = 'id', on_delete=models.CASCADE, primary_key=True)
   height = models.IntegerField()
   weight = models.DecimalField(max_digits=4, decimal_places=2)
-  weight_goal = models.IntegerField()
-  period_goal = models.DateField(default=timezone.now)
   duration = models.IntegerField()
+  goal = models.IntegerField(default = 0)
   
   right_arm_muscle_mass = models.DecimalField(max_digits=4, decimal_places=2, default=0, null=False)
   left_arm_muscle_mass = models.DecimalField(max_digits=4, decimal_places=2, default=0, null=False)
   body_muscle_mass = models.DecimalField(max_digits=4, decimal_places=2, default=0, null=False)
   right_leg_muscle_mass = models.DecimalField(max_digits=4, decimal_places=2, default=0, null=False)
   left_leg_muscle_mass = models.DecimalField(max_digits=4, decimal_places=2, default=0, null=False)
-  muscle_goal = models.IntegerField(default=0)
 
 class UserFridgeImage(models.Model):
   user_id = models.OneToOneField(User, to_field = 'id', on_delete=models.CASCADE, primary_key=True)
