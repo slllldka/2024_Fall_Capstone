@@ -1,8 +1,10 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, SafeAreaView} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 // import Icon from 'react-native-vector-icons/Ionicons';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {useUserStore} from '../store/userStore';
+import AllergyRegistration from '../components/AllergyRegistration';
 
 type RootStackParamList = {
   Main: undefined;
@@ -12,8 +14,36 @@ type RootStackParamList = {
   ChartPage: undefined;
 };
 
+interface UserState {
+  userInfo: {
+    registered_allergy: boolean;
+    name?: string;
+    email?: string;
+    age?: number;
+    height?: number;
+    weight?: number;
+    gender?: 'male' | 'female' | 'other';
+    allergies?: string[];
+  } | null;
+  fetchUserInfo: () => Promise<void>;
+}
+
 export default function Main(): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const [allergyModalVisible, setAllergyModalVisible] = useState(false);
+  const userInfo = useUserStore((state: UserState) => state.userInfo);
+  const fetchUserInfo = useUserStore((state: UserState) => state.fetchUserInfo);
+
+  useEffect(() => {
+    const checkAllergyStatus = async () => {
+      await fetchUserInfo();
+      if (userInfo && !userInfo.registered_allergy) {
+        setAllergyModalVisible(true);
+      }
+    };
+
+    checkAllergyStatus();
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -52,6 +82,10 @@ export default function Main(): React.ReactElement {
           </TouchableOpacity>
         </View>
       </View>
+      <AllergyRegistration
+        visible={allergyModalVisible}
+        onClose={() => setAllergyModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }

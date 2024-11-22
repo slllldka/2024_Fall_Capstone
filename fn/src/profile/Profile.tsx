@@ -1,40 +1,36 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import api from '../api/axiosConfig';
-import JWTManager from '../utils/jwtManager';
 import {StackNavigationProp} from '@react-navigation/stack';
-
-interface UserInfo {
-  email: string;
-  first_name: string;
-  last_name: string;
-  gender: string;
-  vegan: boolean;
-  registered_allergy: boolean;
-}
+import JWTManager from '../utils/jwtManager';
+import {useUserStore} from '../store/userStore';
+import AllergyRegistration from '../components/AllergyRegistration';
 
 type RootStackParamList = {
-  Profile: undefined;
   Login: undefined;
+  Main: undefined;
 };
+
+interface InfoRowProps {
+  label: string;
+  value: string;
+}
+
+const InfoRow = ({label, value}: InfoRowProps) => (
+  <View style={styles.infoRow}>
+    <Text style={styles.label}>{label}:</Text>
+    <Text style={styles.value}>{value}</Text>
+  </View>
+);
 
 export default function Profile(): React.JSX.Element {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [allergyModalVisible, setAllergyModalVisible] = useState(false);
+  const {userInfo, fetchUserInfo} = useUserStore();
 
   useEffect(() => {
     fetchUserInfo();
   }, []);
-
-  const fetchUserInfo = async () => {
-    try {
-      const response = await api.get('/account/myinfo');
-      setUserInfo(response.data);
-    } catch (error) {
-      console.error('사용자 정보 조회 실패:', error);
-    }
-  };
 
   const handleLogout = async () => {
     await JWTManager.clearTokens();
@@ -61,36 +57,28 @@ export default function Profile(): React.JSX.Element {
 
       <ScrollView style={styles.content}>
         <View style={styles.infoSection}>
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>Email:</Text>
-            <Text style={styles.value}>{userInfo.email}</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>Name:</Text>
-            <Text style={styles.value}>{`${userInfo.first_name} ${userInfo.last_name}`}</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>Gender:</Text>
-            <Text style={styles.value}>{userInfo.gender}</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>Vegan:</Text>
-            <Text style={styles.value}>{userInfo.vegan ? 'Yes' : 'No'}</Text>
-          </View>
-
-          <View style={styles.infoRow}>
-            <Text style={styles.label}>Allergy Registered:</Text>
-            <Text style={styles.value}>{userInfo.registered_allergy ? 'Yes' : 'No'}</Text>
-          </View>
+          <InfoRow label='Email' value={userInfo.email} />
+          <InfoRow label='Name' value={`${userInfo.first_name} ${userInfo.last_name}`} />
+          <InfoRow label='Gender' value={userInfo.gender} />
+          <InfoRow label='Vegan' value={userInfo.vegan ? 'Yes' : 'No'} />
+          <InfoRow label='Allergy Registered' value={userInfo.registered_allergy ? 'Yes' : 'No'} />
         </View>
+
+        <TouchableOpacity style={styles.allergyButton} onPress={() => setAllergyModalVisible(true)}>
+          <Text style={styles.allergyButtonText}>
+            {userInfo.registered_allergy ? '알러지 정보 수정' : '알러지 등록'}
+          </Text>
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <AllergyRegistration
+        visible={allergyModalVisible}
+        onClose={() => setAllergyModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -145,6 +133,18 @@ const styles = StyleSheet.create({
     color: '#f3f3f3',
     fontSize: 16,
     fontWeight: '500',
+  },
+  allergyButton: {
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  allergyButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   logoutButton: {
     backgroundColor: '#e74c3c',
