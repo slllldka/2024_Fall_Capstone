@@ -54,8 +54,8 @@ class SelectedFood(models.Model):
       constraints = [
           models.UniqueConstraint(fields=['user_id', 'date_time'], name = 'unique_user_id_date_time_food')
       ]
-'''      
-class FiveDayCalories(models.Model):
+
+class FiveDayCalorie(models.Model):
   user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
   date = models.DateField(default=timezone.now)
-  calories = models.IntegerField()'''
+  calorie = models.IntegerField()

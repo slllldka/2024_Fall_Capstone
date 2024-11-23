@@ -50,17 +50,17 @@ class UserBodyInfo(models.Model):
   goal = models.IntegerField(default = 0)
 
 class UserWeight(models.Model):
-  user_id = models.OneToOneField(User, to_field = 'id', on_delete=models.CASCADE)
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
   date = models.DateField(default = timezone.now)
   weight = models.DecimalField(max_digits=4, decimal_places=2, default = 0)
   
   class Meta:
     constraints = [
       models.UniqueConstraint(fields=['user_id', 'date'], name = 'unique_user_id_date_weight')
-    ]
+    ]   
 
 class UserMuscle(models.Model):
-  user_id = models.OneToOneField(User, to_field = 'id', on_delete=models.CASCADE)
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
   date = models.DateField(default = timezone.now)
   right_arm_muscle_mass = models.DecimalField(max_digits=4, decimal_places=2, default=0, null=False)
   left_arm_muscle_mass = models.DecimalField(max_digits=4, decimal_places=2, default=0, null=False)

@@ -15,6 +15,8 @@ from django.db import IntegrityError
 
 from django.forms.models import model_to_dict
 
+from food.views import calculate_calorie_bound
+
 from .models import *
 
 # Create your views here.
@@ -69,6 +71,7 @@ def weight(request):
         
         try:
             UserWeight.objects.create(user_id = user, weight = weight)
+            calculate_calorie_bound(user)
         except IntegrityError:
             return Response({'error':'only once a day'}, status=status.HTTP_409_CONFLICT)
         return Response({'success':True}, status=status.HTTP_201_CREATED)
