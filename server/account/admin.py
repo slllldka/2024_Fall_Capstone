@@ -5,3 +5,5 @@ from .models import *
 admin.site.register(User)
 admin.site.register(UserBodyInfo)
 admin.site.register(UserFridgeImage)
+admin.site.register(UserWeight)
+admin.site.register(UserMuscle)

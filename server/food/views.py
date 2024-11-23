@@ -162,8 +162,29 @@ def checkVegan(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def foodText(request):
+    user = request.user
     text = request.data.get('text')
-    #TODO
+    goal = UserBodyInfo.objects.get(user_id = user.id).goal
+    calorie_bound = user.calorie_bound
+    #ai returns foods
+    food_list = []
+    return_list = []
+    for food in food_list:
+        if calorie_bound > 0:
+            if goal == -1:
+                if Food.objects.get(name=food).calorie < calorie_bound:
+                    return_list.append(food)
+            elif goal == 1:
+                if Food.objects.get(name=food).calorie > calorie_bound:
+                    return_list.append(food)
+            else:
+                return_list.append(food)
+        else:
+            return_list.append(food)
+            
+        if len(return_list) == 5:
+            break
+    
     return Response({'text':text, 'foods':['list', 'of', 'foods']})
 
 @api_view(['GET', 'POST'])
@@ -232,3 +253,8 @@ def selectFood(request):
             return Response({"success":True})
         except Food.DoesNotExist:
             return Response({'error':'food is wrong'}, status=status.HTTP_400_BAD_REQUEST)
+'''        
+def calculate_calorie_bound(user):
+    selectedFoodSet = SelectedFood.objects.filter(user_id = user.id).order_by('-date_time').values('food_id')
+    if len(selectedFoodSet) == 15:
+        calorie'''

@@ -19,7 +19,105 @@ from .models import *
 
 # Create your views here.
 
-#get, post bodymetrics
+#get, post bodyinfo
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def bodyInfo(request):
+    user = request.user
+    if request.method == 'GET':
+        try:
+            userBodyInfo = UserBodyInfo.objects.get(user_id = user.id)
+        except UserBodyInfo.DoesNotExist:
+            userBodyInfo = UserBodyInfo.objects.create(user_id = user)
+        return Response(model_to_dict(userBodyInfo, fields=['height', 'duration', 'goal']))
+    elif request.method == 'POST':
+        try:
+            userBodyInfo = UserBodyInfo.objects.get(user_id = user.id)
+        except UserBodyInfo.DoesNotExist:
+            userBodyInfo = UserBodyInfo.objects.create(user_id = user)
+        height = request.data.get('height')
+        duration = request.data.get('duration')
+        goal = request.data.get('goal')
+        
+        if height is not None:
+            userBodyInfo.height = height
+        if duration is not None:
+            userBodyInfo.duration = duration
+        if goal is not None:
+            userBodyInfo.goal = goal
+        userBodyInfo.save()
+        
+        return Response({"success":True})
+#get, post weight
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def weight(request):
+    user = request.user
+    if request.method == 'GET':
+        userWeightSet = UserWeight.objects.filter(user_id = user.id).order_by('-date')[:30]
+        if len(userWeightSet) == 0:
+            return Response({"error":"weight does not exist"}, status = status.HTTP_404_NOT_FOUND)
+        userWeightList = []
+        for userWeight in userWeightSet:
+            userWeightList.append(model_to_dict(userWeight, fields=['date', 'weight']))
+        return Response({'weights':userWeightList})
+    elif request.method == 'POST':
+        weight = request.data.get('weight')
+        
+        if weight is None:
+            return Response({'error':'missing weight'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            UserWeight.objects.create(user_id = user, weight = weight)
+        except IntegrityError:
+            return Response({'error':'only once a day'}, status=status.HTTP_409_CONFLICT)
+        return Response({'success':True}, status=status.HTTP_201_CREATED)
+    
+#get, post muscle
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def muscle(request):
+    user = request.user
+    if request.method == 'GET':
+        userMuscleSet = UserMuscle.objects.filter(user_id = user.id).order_by('-date')[:30]
+        if len(userMuscleSet) == 0:
+            return Response({"error":"muscle does not exist"}, status = status.HTTP_404_NOT_FOUND)
+        userMuscleList = []
+        for userMuscle in userMuscleSet:
+            userMuscleList.append(model_to_dict(userMuscle
+                                                , fields=['date', 'right_arm_muscle_mass', 'left_arm_muscle_mass'
+                                                          , 'body_muscle_mass', 'right_leg_muscle_mass'
+                                                          , 'left_leg_muscle_mass']))
+        return Response({'muscles':userMuscleList})
+    elif request.method == 'POST':
+        right_arm_muscle_mass = request.data.get('right_arm_muscle_mass')
+        left_arm_muscle_mass = request.data.get('left_arm_muscle_mass')
+        body_muscle_mass = request.data.get('body_muscle_mass')
+        right_leg_muscle_mass = request.data.get('right_leg_muscle_mass')
+        left_leg_muscle_mass = request.data.get('left_leg_muscle_mass')
+        
+        if right_arm_muscle_mass is None:
+            return Response({'error':'missing right_arm_muscle_mass'}, status=status.HTTP_400_BAD_REQUEST)
+        elif left_arm_muscle_mass is None:
+            return Response({'error':'missing left_arm_muscle_mass'}, status=status.HTTP_400_BAD_REQUEST)
+        elif body_muscle_mass is None:
+            return Response({'error':'missing body_muscle_mass'}, status=status.HTTP_400_BAD_REQUEST)
+        elif right_leg_muscle_mass is None:
+            return Response({'error':'missing right_leg_muscle_mass'}, status=status.HTTP_400_BAD_REQUEST)
+        elif left_leg_muscle_mass is None:
+            return Response({'error':'missing left_leg_muscle_mass'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            UserMuscle.objects.create(user_id = user, right_arm_muscle_mass=right_arm_muscle_mass, left_arm_muscle_mass=left_arm_muscle_mass
+                                    , body_muscle_mass=body_muscle_mass, right_leg_muscle_mass=right_leg_muscle_mass
+                                    , left_leg_muscle_mass=left_leg_muscle_mass)
+        except IntegrityError:
+            return Response({'error':'only once a day'}, status=status.HTTP_409_CONFLICT)
+        
+        newPlan(user)
+        return Response({'success':True}, status=status.HTTP_201_CREATED)
+        
+'''    
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def bodyMetrics(request):
@@ -28,10 +126,21 @@ def bodyMetrics(request):
         try:
             userBodyInfo = UserBodyInfo.objects.get(user_id = user.id)
         except UserBodyInfo.DoesNotExist:
-            return Response({'error':'UserBodyInfo does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        return Response(model_to_dict(userBodyInfo
+            UserBodyInfo.objects.create(user_id = user)
+        try:
+            userWeightSet = UserWeight.objects.filter(user_id = user.id)[:10]
+        except UserWeight.DoesNotExist:
+            UserWeight.objects.create(user_id = user)
+        try:
+            userBodyInfoSet = UserMuscle.objects.filter(user_id = user.id)[:10]
+        except UserMuscle.DoesNotExist:
+            UserMuscle.objects.create(user_id = user)
+        userBodyInfoList = []
+        for userBodyInfo in userBodyInfoSet:
+            userBodyInfoList.append(model_to_dict(userBodyInfo
                                       , fields=['height', 'weight', 'duration', 'goal', 'right_arm_muscle_mass', 'left_arm_muscle_mass'
-                                                , 'body_muscle_mass', 'right_leg_muscle_mass', 'left_leg_muscle_mass']))
+                                                , 'body_muscle_mass', 'right_leg_muscle_mass', 'left_leg_muscle_mass', 'date_time']))
+        return Response({"bodyinfos":userBodyInfoList})
     elif request.method == 'POST':
         needNewPlan = False
         #Required
@@ -93,9 +202,10 @@ def bodyMetrics(request):
             newPlan(user)
         
         return response
+'''
 
 def newPlan(user):
-    muscleMassSet = UserBodyInfo.objects.get(user_id = user.id)
+    muscleMassSet = UserMuscle.objects.get(user_id = user.id)
     armsMuscleMass = muscleMassSet.right_arm_muscle_mass + muscleMassSet.left_arm_muscle_mass
     bodyMuscleMass = muscleMassSet.body_muscle_mass
     legsMuscleMass = muscleMassSet.right_leg_muscle_mass + muscleMassSet.left_leg_muscle_mass
