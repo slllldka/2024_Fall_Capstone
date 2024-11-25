@@ -9,9 +9,11 @@ router = routers.DefaultRouter() #DefaultRouter를 설정
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('body_metrics', bodyMetrics, name = 'bodyMetrics'),
+    path('body_info', bodyInfo, name = 'bodyInfo'),
+    path('weight', weight, name = 'weight'),
+    path('muscle', muscle, name = 'muscle'),
     path('done_exercise', doneExercise, name = 'doneExercise'),
-    path('recommend', exerciseRecommendation, name = 'exerciseRecommendation'),
+    path('plan', exercisePlan, name = 'exercisePlan'),
     ###path('login', login, name = 'login'),
     ###path('user/id/<int:id>', UserID.as_view(),name ='id')
 ]

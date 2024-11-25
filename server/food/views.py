@@ -16,6 +16,8 @@ from rest_framework_simplejwt.exceptions import TokenError
 from django.utils import timezone
 
 from django.db import IntegrityError
+from django.db.models import Sum
+
 
 #from .models import User
 from .models import *
@@ -159,11 +161,33 @@ def checkVegan(request):
             vegan_food_list.append(vegan_food_name['name'])
         return Response({'vegan':isVegan, 'foods':vegan_food_list})
     
+#food recommendation
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def foodText(request):
+    user = request.user
     text = request.data.get('text')
-    #TODO
+    goal = UserBodyInfo.objects.get(user_id = user.id).goal
+    calorie_bound = user.calorie_bound
+    #ai returns foods
+    food_list = []
+    return_list = []
+    for food in food_list:
+        if calorie_bound > 0:
+            if goal == -1:
+                if Food.objects.get(name=food).calorie < calorie_bound / 3:
+                    return_list.append(food)
+            elif goal == 1:
+                if Food.objects.get(name=food).calorie > calorie_bound / 3:
+                    return_list.append(food)
+            else:
+                return_list.append(food)
+        else:
+            return_list.append(food)
+            
+        if len(return_list) == 5:
+            break
+    
     return Response({'text':text, 'foods':['list', 'of', 'foods']})
 
 @api_view(['GET', 'POST'])
@@ -204,31 +228,50 @@ def selectFood(request):
                 food_list.append(food.name)
                 date_time_list.append(food_date_time['date_time'])
                 #date_time_list.append(timezone.localtime(food_date_time['date_time']))
+                
             return Response({'foods':food_list, 'date_times':date_time_list})
             
         except SelectedFood.DoesNotExist:
             return Response({'error':'foods do not exist'}, status=status.HTTP_404_NOT_FOUND)
         
-        '''
-        try:
-            food__date_time_list = []
-            food_date_time_set = SelectedFood.objects.filter(user_id=user_id).values('food_id', 'date_time')
-            for food_date_time in food_date_time_set:
-                
-            
-        except SelectedFood.DoesNotExist:
-            return Response({'error':'foods do not exist'}, status=status.HTTP_404_NOT_FOUND)
-        '''
     elif request.method == 'POST':
         user = request.user
         food_name = request.data.get('food')
-        
-        #if food_name is None:
-        #    return Response({"success":True})
-        #else:
         try:
             food = Food.objects.get(name=food_name)
-            SelectedFood.objects.create(user_id = user, food_id = food)
-            return Response({"success":True})
+            saved_food = SelectedFood.objects.create(user_id = user, food_id = food)
+            
+            selected_food_count = SelectedFood.objects.filter(user_id=user.id).count()
+            if selected_food_count % 15 == 0:
+                foodSet15 = SelectedFood.objects.filter(user_id=user.id).order_by('-date_time').values('food_id')[:15]
+                calorieSum = 0
+                for food in foodSet15:
+                    calorieSum += Food.objects.get(id = food['food_id']).calorie
+                FiveDayCalorie.objects.create(user_id = user, date=saved_food.date_time, calorie=calorieSum)
+                calculate_calorie_bound(user)
+                
+            return Response({"success":True}, status=status.HTTP_201_CREATED)
         except Food.DoesNotExist:
             return Response({'error':'food is wrong'}, status=status.HTTP_400_BAD_REQUEST)
+
+def calculate_calorie_bound(user):
+    calorieCount = FiveDayCalorie.objects.filter(user_id=user.id).count()
+    weightCount = UserWeight.objects.filter(user_id=user.id).count()
+    if  calorieCount >= 2 and (calorieCount + 1 == weightCount):
+        fiveDayCalorieSet = FiveDayCalorie.objects.filter(user_id=user.id).order_by('-date').values('calorie')
+        weightSet = UserWeight.objects.filter(user_id=user.id).order_by('-date').values('weight')
+        calorieList = []
+        for i in range(0, calorieCount - 1):
+            calorie1 = fiveDayCalorieSet[i]['calorie']
+            calorie2 = fiveDayCalorieSet[i+1]['calorie']
+            deltaWeight1 = weightSet[i]['weight'] - weightSet[i+1]['weight']
+            deltaWeight2 = weightSet[i+1]['weight'] - weightSet[i+2]['weight']
+            deltaCalorie = calorie2 - calorie1
+            deltaDeltaWeight = deltaWeight2 - deltaWeight1
+            if deltaCalorie * deltaDeltaWeight > 0:
+                ans = calorie1 - (deltaCalorie/deltaDeltaWeight) * deltaWeight1
+                calorieList.append(ans)
+        if len(calorieList) > 0:
+            calorie_bound = sum(calorieList)/len(calorieList)
+            user.calorie_bound = calorie_bound / 5
+            user.save()
