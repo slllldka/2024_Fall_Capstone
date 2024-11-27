@@ -13,6 +13,7 @@ type RootStackParamList = {
   FoodInput: undefined;
   ChatRoom: undefined;
   ChartPage: undefined;
+  WorkoutRecommend: undefined;
 };
 
 interface UserState {
@@ -34,8 +35,8 @@ const {width} = Dimensions.get('window');
 export default function Main(): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [allergyModalVisible, setAllergyModalVisible] = useState(false);
-  const userInfo = useUserStore((state: UserState) => state.userInfo);
-  const fetchUserInfo = useUserStore((state: UserState) => state.fetchUserInfo);
+  const userInfo = useUserStore(state => state.userInfo);
+  const fetchUserInfo = useUserStore(state => state.fetchUserInfo);
 
   useEffect(() => {
     const checkAllergyStatus = async () => {
@@ -67,7 +68,7 @@ export default function Main(): React.ReactElement {
       title: 'Workout',
       subtitle: 'Exercise guide',
       icon: 'dumbbell',
-      route: 'ChatRoom',
+      route: 'WorkoutRecommend',
       gradient: ['#6C5CE7', '#8067E7'],
     },
     {
