@@ -1,4 +1,4 @@
-import create from 'zustand';
+import {create} from 'zustand';
 import api from '../api/axiosConfig';
 
 interface UserInfo {
@@ -17,19 +17,19 @@ interface UserStore {
   updateAllergyStatus: (status: boolean) => void;
 }
 
-export const useUserStore = create<UserStore>((set) => ({
+export const useUserStore = create<UserStore>()(set => ({
   userInfo: null,
-  setUserInfo: (info) => set({ userInfo: info }),
+  setUserInfo: info => set({userInfo: info}),
   fetchUserInfo: async () => {
     try {
       const response = await api.get('/account/myinfo');
-      set({ userInfo: response.data });
+      set({userInfo: response.data});
     } catch (error) {
       console.error('사용자 정보 조회 실패:', error);
     }
   },
-  updateAllergyStatus: (status) => 
-    set((state) => ({
-      userInfo: state.userInfo ? { ...state.userInfo, registered_allergy: status } : null
+  updateAllergyStatus: status =>
+    set(state => ({
+      userInfo: state.userInfo ? {...state.userInfo, registered_allergy: status} : null,
     })),
-})); 
+}));

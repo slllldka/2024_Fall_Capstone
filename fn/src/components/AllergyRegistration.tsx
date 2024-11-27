@@ -1,22 +1,34 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal} from 'react-native';
 import api from '../api/axiosConfig';
-import { useUserStore } from '../store/userStore';
+import {useUserStore} from '../store/userStore';
 
-export default function AllergyRegistration({ visible, onClose }: { visible: boolean; onClose: () => void }) {
-  const [allergies, setAllergies] = useState('');
-  const updateAllergyStatus = useUserStore((state: { updateAllergyStatus: boolean }) => state.updateAllergyStatus);
+export default function AllergyRegistration({
+  visible,
+  onClose,
+}: {
+  visible: boolean;
+  onClose: () => void;
+}) {
+  const [allergyList, setAllergyList] = useState<string[]>([]);
+  const [currentAllergy, setCurrentAllergy] = useState('');
+  const updateAllergyStatus = useUserStore(state => state.updateAllergyStatus);
+
+  const addAllergy = () => {
+    if (currentAllergy.trim()) {
+      setAllergyList([...allergyList, currentAllergy.trim()]);
+      setCurrentAllergy('');
+    }
+  };
+
+  const removeAllergy = (index: number) => {
+    setAllergyList(allergyList.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async () => {
     try {
-      await api.post('/food/user_allergy', { allergies: allergies.split(',').map(a => a.trim()) });
+      console.log({allergies: allergyList});
+      await api.post('/food/user_allergy', {allergies: allergyList});
       updateAllergyStatus(true);
       onClose();
     } catch (error) {
@@ -25,20 +37,41 @@ export default function AllergyRegistration({ visible, onClose }: { visible: boo
   };
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
+    <Modal visible={visible} transparent animationType='slide'>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.title}>알러지 등록</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="알러지 항목을 쉼표로 구분하여 입력하세요"
-            placeholderTextColor="#888"
-            value={allergies}
-            onChangeText={setAllergies}
-            multiline
-          />
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder='알러지 항목을 입력하세요'
+              placeholderTextColor='#888'
+              value={currentAllergy}
+              onChangeText={setCurrentAllergy}
+              onSubmitEditing={addAllergy}
+            />
+            <TouchableOpacity style={styles.addButton} onPress={addAllergy}>
+              <Text style={styles.buttonText}>추가</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.allergyList}>
+            {allergyList.map((allergy, index) => (
+              <View key={index} style={styles.allergyItem}>
+                <Text style={styles.allergyText}>{allergy}</Text>
+                <TouchableOpacity onPress={() => removeAllergy(index)}>
+                  <Text style={styles.removeButton}>X</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <TouchableOpacity
+              style={[styles.button, allergyList.length === 0 && styles.disabledButton]}
+              onPress={handleSubmit}
+              disabled={allergyList.length === 0}
+            >
               <Text style={styles.buttonText}>등록</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
@@ -63,6 +96,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: '80%',
+    maxHeight: '80%',
   },
   title: {
     color: '#fff',
@@ -70,13 +104,43 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 15,
   },
+  inputContainer: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
   input: {
+    flex: 1,
     backgroundColor: '#444',
     color: '#fff',
     padding: 10,
     borderRadius: 5,
+    marginRight: 10,
+  },
+  addButton: {
+    backgroundColor: '#28a745',
+    padding: 10,
+    borderRadius: 5,
+    justifyContent: 'center',
+  },
+  allergyList: {
     marginBottom: 15,
-    height: 100,
+  },
+  allergyItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#444',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: 5,
+  },
+  allergyText: {
+    color: '#fff',
+  },
+  removeButton: {
+    color: '#ff4444',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -89,6 +153,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 5,
   },
+  disabledButton: {
+    backgroundColor: '#666',
+  },
   cancelButton: {
     backgroundColor: '#FF3B30',
   },
@@ -97,4 +164,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-}); 
+});

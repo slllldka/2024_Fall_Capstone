@@ -3,8 +3,10 @@ import {View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ScrollView} from
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import JWTManager from '../utils/jwtManager';
-import {useUserStore} from '../store/userStore';
-import AllergyRegistration from '../components/AllergyRegistration';
+import {useUserStore} from '../store/userStore.tsx';
+import AllergyRegistration from '../components/AllergyRegistration.tsx';
+import WeightRegistration from '../components/WeightRegistration.tsx';
+import MuscleRegistration from '../components/MuscleRegistration.tsx';
 
 type RootStackParamList = {
   Login: undefined;
@@ -26,6 +28,8 @@ const InfoRow = ({label, value}: InfoRowProps) => (
 export default function Profile(): React.JSX.Element {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [allergyModalVisible, setAllergyModalVisible] = useState(false);
+  const [weightModalVisible, setWeightModalVisible] = useState(false);
+  const [muscleModalVisible, setMuscleModalVisible] = useState(false);
   const {userInfo, fetchUserInfo} = useUserStore();
 
   useEffect(() => {
@@ -64,9 +68,17 @@ export default function Profile(): React.JSX.Element {
           <InfoRow label='Allergy Registered' value={userInfo.registered_allergy ? 'Yes' : 'No'} />
         </View>
 
+        <TouchableOpacity style={styles.actionButton} onPress={() => setWeightModalVisible(true)}>
+          <Text style={styles.actionButtonText}>Register Weight</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.actionButton} onPress={() => setMuscleModalVisible(true)}>
+          <Text style={styles.actionButtonText}>Register Muscle Information</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.allergyButton} onPress={() => setAllergyModalVisible(true)}>
           <Text style={styles.allergyButtonText}>
-            {userInfo.registered_allergy ? '알러지 정보 수정' : '알러지 등록'}
+            {userInfo.registered_allergy ? 'Fix Allergic foods' : 'Register Allergic'}
           </Text>
         </TouchableOpacity>
 
@@ -78,6 +90,14 @@ export default function Profile(): React.JSX.Element {
       <AllergyRegistration
         visible={allergyModalVisible}
         onClose={() => setAllergyModalVisible(false)}
+      />
+      <WeightRegistration
+        visible={weightModalVisible}
+        onClose={() => setWeightModalVisible(false)}
+      />
+      <MuscleRegistration
+        visible={muscleModalVisible}
+        onClose={() => setMuscleModalVisible(false)}
       />
     </SafeAreaView>
   );
@@ -135,7 +155,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   allergyButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#444',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -162,5 +182,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginTop: 20,
+  },
+  actionButton: {
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
