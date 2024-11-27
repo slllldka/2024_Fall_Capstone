@@ -6,6 +6,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {useUserStore} from '../store/userStore';
 import AllergyRegistration from '../components/AllergyRegistration';
 import LinearGradient from 'react-native-linear-gradient';
+import {BlurView} from '@react-native-community/blur';
 
 type RootStackParamList = {
   Main: undefined;
@@ -113,18 +114,25 @@ export default function Main(): React.ReactElement {
             onPress={() => navigation.navigate(item.route)}
             style={styles.menuItem}
           >
-            <LinearGradient
-              colors={item.gradient}
-              style={styles.gradientBox}
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 1}}
+            <BlurView
+              style={styles.blurContainer}
+              blurType='dark'
+              blurAmount={10}
+              reducedTransparencyFallbackColor='transparent'
             >
-              <Icon name={item.icon} size={32} color='#ffffff' />
-              <View style={styles.menuTextContainer}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </View>
-            </LinearGradient>
+              <LinearGradient
+                colors={[`${item.gradient[0]}50`, `${item.gradient[1]}50`]}
+                style={styles.gradientBox}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 1}}
+              >
+                <Icon name={item.icon} size={32} color='#ffffff' />
+                <View style={styles.menuTextContainer}>
+                  <Text style={styles.menuTitle}>{item.title}</Text>
+                  <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
+                </View>
+              </LinearGradient>
+            </BlurView>
           </TouchableOpacity>
         ))}
       </View>
@@ -186,25 +194,42 @@ const styles = StyleSheet.create({
     width: (width - 40) / 2,
     height: 160,
     margin: 5,
+    overflow: 'hidden',
+    borderRadius: 20,
+  },
+  blurContainer: {
+    flex: 1,
+    borderRadius: 20,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   gradientBox: {
     flex: 1,
-    borderRadius: 20,
     padding: 20,
     justifyContent: 'space-between',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
-  menuTextContainer: {
-    marginTop: 'auto',
-  },
+  // menuTextContainer: {
+  //   marginTop: 'auto',
+  //   backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  //   padding: 10,
+  //   borderRadius: 10,
+  // },
   menuTitle: {
     color: '#ffffff',
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 3,
   },
   menuSubtitle: {
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 14,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 3,
   },
   icon: {
     width: 28,
