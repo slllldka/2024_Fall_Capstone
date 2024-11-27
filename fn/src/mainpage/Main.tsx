@@ -83,14 +83,20 @@ export default function Main(): React.ReactElement {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerButton}>
-          <Icon name='menu' size={28} color='#ffffff' />
+          <Icon
+            onPress={() => navigation.goBack()}
+            name='arrow-left'
+            size={28}
+            color='#ffffff'
+            style={styles.icon}
+          />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>FLEX Coach</Text>
         <TouchableOpacity
           onPress={() => navigation.navigate('Profile')}
           style={styles.headerButton}
         >
-          <Icon name='account-circle' size={28} color='#ffffff' />
+          <Icon name='account' size={28} color='#ffffff' style={styles.icon} />
         </TouchableOpacity>
       </View>
 
@@ -145,6 +151,8 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
     color: '#ffffff',
@@ -196,5 +204,10 @@ const styles = StyleSheet.create({
   menuSubtitle: {
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 14,
+  },
+  icon: {
+    width: 28,
+    height: 28,
+    textAlign: 'center',
   },
 });
