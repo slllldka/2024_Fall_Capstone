@@ -1,0 +1,738 @@
+pancake
+bit
+flavor
+help
+type
+create
+medium
+carrot
+crispy
+crunch
+texture
+heat
+potato
+vinegar
+complement
+mixture
+Gamjajeon
+variation
+starchy
+amount
+brown
+scallion
+gamjajeon
+oil
+edge
+onion
+sauce
+batter
+pinch
+salt
+flour
+spread
+Korean
+garlic
+hangover
+slice
+gukbap
+taste
+side
+sausage
+korea
+sundae
+rice
+powder
+bone
+ingredient
+blood
+chili
+base
+Korea
+broth
+remedy
+perilla
+piece
+stomach
+stock
+soup
+meal
+preference
+Sundae Gukbap
+pork
+suyuk
+condiment
+meaty
+juicy
+season
+ginger
+Suyuk Gukbap
+paste
+tender
+dish
+shrimp
+diner
+Rice
+adjust
+becomes
+eat
+savory
+hours
+quality
+addition
+leaf
+name
+meatiness
+neck
+spicy
+gamjatang
+spine
+spice
+fall
+cabbage
+hour
+deeply
+kick
+seed
+hearty
+Gamjatang
+bean
+kelp
+sprinkle
+soy
+Kongnamul
+Bean Sprout Soup
+sprout
+light
+Kimchi Stew
+comfort
+water
+stew
+meld
+lends
+bowl
+tofu
+anchovy
+days
+color
+level
+Kimchi Jjigae
+kimchi
+day
+jjigae
+pair
+soybean
+mushroom
+assortment
+brisket
+sweetness
+Beef Brisket
+doenjang
+beef
+add
+touch
+depth
+earthy
+Doenjang Jjigae
+zucchini
+start
+layer
+Jjigae
+bold
+Sundubu Jjigae
+chilly days
+pot
+variety
+stone
+Soft Tofu Stew
+sundubu
+vegetable
+mildness
+egg
+choice
+army
+mix
+eaten
+noodle
+American
+Budae Jjigae
+the Korean War
+Army Stew
+gathering
+food
+fusion
+war
+spam
+budae
+balance
+dog
+Spam
+person
+first
+galbi
+chestnut
+holiday
+thickens
+rib
+consistency
+Galbi Jjim
+jjim
+celebration
+Braised Short Ribs
+sugar
+process
+meat
+absorb
+Braised Chicken
+feature
+sesame
+jjimdak
+chicken
+pepper
+glass
+result
+dangmyeon
+soak
+sharing
+Jjimdak
+Beef Bowl
+tanginess
+mirin
+shichimi togarashi
+shoga
+coating
+creates
+blend
+Japanese
+Gyudon
+hint
+gyudon
+preparation
+bed
+infuses
+creaminess
+enhance
+lover
+liquid
+Chashu Don
+seaweed
+chashu
+drizzle
+Pork Bowl
+combination
+custardy
+Pork Cutlet Bowl
+cutlet
+breadcrumb
+dashi
+japan
+katsudon
+tonkatsu
+Katsudon
+Japan
+briefly
+Sake Don
+Salmon Rice Bowl
+buttery
+briny
+burst
+sashimi
+salmon
+wasabi
+ikura
+roe
+sake
+ease
+creamy
+Mayo Rice Bowl
+tangy
+mayo
+teriyaki
+convenient
+samgyeopsal
+Samgyeopsal Rice Bowl
+Pork Belly Rice Bowl
+Kimchi
+brings
+contrast
+barbecue
+format
+aroma
+Spicy Pork Rice Bowl
+jeyuk
+deopbap
+featuring
+Jeyuk Deopbap
+element
+Indian
+Curry Rice
+curry
+melt
+chunk
+block
+rakkyo
+shallot
+honey
+apple
+sweet
+Kare Raisu
+thai
+Thai
+acidity
+kare
+roux
+option
+begin
+dash
+pan
+release
+bite
+Kimchi Fried Rice
+juice
+wheat
+shoyu
+gourmet
+colder
+range
+character
+yolk
+shio
+bamboo
+tonkotsu
+chewy
+butter
+style
+region
+shoot
+ramen
+lighter
+experience
+topping
+corn
+fish
+cucumber
+sushi
+nigiri
+form
+presentation
+accompaniment
+Pork Bone Soup
+gochujang
+vibrant
+gochugaru
+Ginseng Chicken Soup
+ginkgo
+date
+promote
+property
+ginseng
+resilience
+nut
+summer
+Samgyetang
+jujubes
+the hot summer months
+samgyetang
+month
+subtle
+energy
+mala
+numbing
+absorbing
+peppercorn
+sichuan
+signature
+tallow
+Sichuan
+seafood
+sensation
+starch
+cut
+strip
+Cake Soup
+street
+odeng
+weather
+Odeng Tang
+cake
+tang
+ground
+clean
+Black Bean Noodles
+jjajangmyeon
+chunjang
+Korean-Chinese
+thick
+Jjajangmyeon
+jjajang
+black bean paste
+mussel
+richness
+Jjamppong
+clam
+Spicy Seafood Noodles
+jjamppong
+Sour Pork
+tangsuyuk
+crispiness
+remains
+Sweet
+Black Bean Sauce
+combine
+jjajangbap
+comforting
+offer
+japchae
+mild
+spinach
+bell
+colorful
+protein
+japchaebap
+coat
+Soy Sauce Egg Rice
+prepare
+grain
+simple
+time
+saltiness
+velvety
+splash
+balancing
+Mapo Tofu
+Chinese
+enjoyed
+cube
+cornstarch
+doubanjiang
+mapo
+versatility
+bibimbap
+array
+bulgogi
+Mixed Rice
+everything
+nuttiness
+dollop
+satisfying
+year
+dumpling
+Mandu
+end
+Korean New Year
+part
+Tteokguk
+age
+luck
+eating
+another year in age
+Rice Cake Soup
+tteokguk
+appeal
+Bajirak Kalguksu
+treat
+bajirak
+shell
+brininess
+citrus
+goma
+dining
+item
+delicate
+shine
+kombu
+sound
+ponzu
+cook
+motsunabe
+collagen
+Offal Hot Pot
+miso
+offal
+content
+months
+simplicity
+arrangement
+nabe
+infuse
+elegance
+Mille-feuille Nabe
+technique
+section
+Layered Hot Pot
+sukiyaki
+shirataki
+salty
+Sukiyaki
+iron
+beaten
+konjac
+eggplant
+Rice Bowl
+absorbs
+cilantro
+table
+raw
+herbal
+selection
+center
+chilies
+tomato
+Tempura Rice Bowl
+tentsuyu
+tendon
+crunchy
+Tendon
+prawn
+highlight
+tempura
+filling
+crab
+sheet
+snack
+crisp
+stick
+medley
+Kimbap
+Rice Rolls
+roll
+kimbap
+nori
+tteokbokki
+note
+deep
+Tteokbokki
+Spicy Rice Cakes
+cold
+invigorating
+Bibim Guksu*
+freshness
+buckwheat
+bibim
+refreshing
+chewiness
+Banquet Noodles
+banquet
+Janchi Guksu
+janchi
+guksu
+Broth
+profile
+Cold Noodles
+mul
+naengmyeon
+pear
+icy
+mustard
+warm
+Bibim Naengmyeon
+Spicy Cold Noodles
+kamaboko
+versatile
+any season
+bonito
+herb
+cream
+parsley
+bacon
+basil
+strand
+nutmeg
+enhances
+pasta
+Parmesan
+Italian
+Cream Pasta
+indulgent
+Garlic
+infusing
+Oil Pasta
+aglio
+showcase
+flake
+dinner
+warmth
+pureed
+Tomato Pasta
+oregano
+Dough Soup
+cold days
+dough
+sujebi
+Sujebi
+method
+smoky
+perfect
+skin
+worldwide
+way
+perfection
+cuisine
+Chicken
+Mozzarella
+cheddar
+parmesan
+version
+world
+crust
+pizza
+mozzarella
+people
+Margherita
+temperature
+pepperoni
+succulent
+five
+hoisin
+render
+duck
+orange
+Grilled Duck
+grill
+wrap
+moist
+cumin
+lemon
+outer
+chop
+glaze
+salad
+reaction
+filet
+maillard
+offering
+tenderness
+mignon
+cooking
+steak
+course
+Beef
+Maillard
+lock
+skirt
+Bone Soup
+several hours
+Seolleongtang
+substance
+extract
+seolleongtang
+retains
+intestine
+inside
+eater
+webfoot
+bokkeum
+Nakji Bokkeum*
+fiery
+syrup
+octopus
+Octopus
+spiciness
+fan
+Jeyuk Bokkeum
+squid
+Ojingeo Bokkeum
+Dakgalbi
+dakgalbi
+Spicy Stir-fried Chicken
+cheese
+wrapping
+tteok
+turn
+tenderloin
+worcestershire
+panko
+Tonkatsu
+Worcestershire
+ketchup
+loin
+tartar
+haddock
+Fish Cutlet
+Cutlet
+squeeze
+coleslaw
+fillet
+cod
+tilapia
+flaky
+pop
+Roe
+Ikura Don
+mulhoe
+ice
+the summer months
+flounder
+sourness
+sea
+shiso
+delicacy
+pure
+Sashimi
+palate
+cleanser
+mackerel
+daikon
+bream
+yellowtail
+essence
+scallop
+snapper
+Godeungeo Jorim
+godeungeo
+contribute
+jorim
+Spicy Chicken Feet
+beer
+bar
+foot
+mint
+lime
+cuốn
+gỏi
+spring
+Vietnamese
+vermicelli
+lettuce
+peanut
+appetizer
+paper
+chấm
+dip
+leafy
+Boiled Pork Slices
+Suyuk
+ssamjang
+aromatics
+gaminess
+Caesar
+ranch
+tuna
+fruit
+vinaigrette
+arugula
+caesar
+Salad
+mayonnaise
+bread
+roast
+endless
+multiple
+sandwich
+panini
+club
+adaptability
+turkey
+ham
+nature
+include
+hamburger
+Classic
+avocado
+patty
+specialty
+bun
+breast
+burger
+tasty
+twist
+pickle
