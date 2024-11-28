@@ -1,0 +1,180 @@
+Message: I feel like eating something spicy tonight.
+Positive Keywords: spicy
+Negative Keywords: None
+
+Message: I’m craving something sweet but not too heavy.
+Positive Keywords: sweet
+Negative Keywords: None
+
+Message: Can you suggest a meal with lots of veggies?
+Positive Keywords: veggies
+Negative Keywords: None
+
+Message: I’d love to have something quick and easy to eat.
+Positive Keywords: quick
+Negative Keywords: None
+
+Message: I want something rich and savory.
+Positive Keywords: savory
+Negative Keywords: None
+
+Message: I don’t want anything fried, maybe something grilled instead.
+Positive Keywords: grilled
+Negative Keywords: fried
+
+Message: No dairy, please; my stomach can’t handle it right now.
+Positive Keywords: None
+Negative Keywords: dairy
+
+Message: I’m in the mood for seafood.
+Positive Keywords: seafood
+Negative Keywords: None
+
+Message: How about a comforting soup?
+Positive Keywords: soup
+Negative Keywords: None
+
+Message: I’d prefer something gluten-free.
+Positive Keywords: gluten-free
+Negative Keywords: None
+
+Message: I feel like having a big bowl of pasta.
+Positive Keywords: pasta
+Negative Keywords: None
+
+Message: Can you suggest a dish with chicken?
+Positive Keywords: chicken
+Negative Keywords: None
+
+Message: I’m looking for something refreshing and light.
+Positive Keywords: refreshing, light
+Negative Keywords: None
+
+Message: Avoid anything too greasy.
+Positive Keywords: None
+Negative Keywords: greasy
+
+Message: I’m open to trying something new, maybe with exotic spices.
+Positive Keywords: exotic spices
+Negative Keywords: None
+
+Message: I’d like something protein-packed for after my workout.
+Positive Keywords: protein-packed
+Negative Keywords: None
+
+Message: Could you recommend a dessert that’s not too sugary?
+Positive Keywords: dessert
+Negative Keywords: sugary
+
+Message: No meat today, I want something vegetarian.
+Positive Keywords: vegetarian
+Negative Keywords: meat
+
+Message: I’m not in the mood for any spicy food.
+Positive Keywords: None
+Negative Keywords: spicy
+
+Message: Could you suggest a traditional dish?
+Positive Keywords: traditional
+Negative Keywords: None
+
+Message: I’d like something with noodles.
+Positive Keywords: noodles
+Negative Keywords: None
+
+Message: I don’t want anything with a lot of garlic.
+Positive Keywords: None
+Negative Keywords: garlic
+
+Message: Can you suggest a snack that’s not too filling?
+Positive Keywords: snack
+Negative Keywords: filling
+
+Message: I feel like having some comfort food.
+Positive Keywords: comfort food
+Negative Keywords: None
+
+Message: Avoid anything too sour or bitter.
+Positive Keywords: None
+Negative Keywords: sour, bitter
+
+Message: I’m looking for something crunchy and savory.
+Positive Keywords: crunchy, savory
+Negative Keywords: None
+
+Message: I’d prefer a low-carb option.
+Positive Keywords: low-carb
+Negative Keywords: None
+
+Message: No shellfish, please, I’m allergic.
+Positive Keywords: None
+Negative Keywords: shellfish
+
+Message: I want something that’s both sweet and spicy.
+Positive Keywords: sweet, spicy
+Negative Keywords: None
+
+Message: Can you suggest something that pairs well with tea?
+Positive Keywords: tea pairing
+Negative Keywords: None
+
+Message: No red meat today, I’d rather have fish or chicken.
+Positive Keywords: fish, chicken
+Negative Keywords: red meat
+
+Message: I want something creamy but without dairy.
+Positive Keywords: creamy
+Negative Keywords: dairy
+
+Message: Could you suggest a meal with a hint of lemon?
+Positive Keywords: lemon flavor
+Negative Keywords: None
+
+Message: I don’t feel like having rice; anything else works.
+Positive Keywords: None
+Negative Keywords: rice
+
+Message: I’d like something light and fresh.
+Positive Keywords: light, fresh
+Negative Keywords: None
+
+Message: Please avoid beans and legumes.
+Positive Keywords: None
+Negative Keywords: beans, legumes
+
+Message: Could you suggest a dish with mushrooms?
+Positive Keywords: mushrooms
+Negative Keywords: None
+
+Message: No sweets today; I want a salty snack.
+Positive Keywords: salty, snack
+Negative Keywords: sweets
+
+Message: I’m looking for something mildly spiced, nothing intense.
+Positive Keywords: mildly spiced
+Negative Keywords: intense
+
+Message: I’m craving something cheesy but not too heavy.
+Positive Keywords: cheesy
+Negative Keywords: heavy
+
+Message: Can you suggest a dish that goes well with bread?
+Positive Keywords: bread pairing
+Negative Keywords: None
+
+Message: I want a meal with a lot of fresh herbs.
+Positive Keywords: fresh herbs
+Negative Keywords: None
+
+Message: Nothing with onions today, please.
+Positive Keywords: None
+Negative Keywords: onions
+
+Message: I’d prefer a plant-based meal.
+Positive Keywords: plant-based
+Negative Keywords: None
+
+Message: Could you recommend a seasonal dish?
+Positive Keywords: seasonal
+Negative Keywords: None
+
