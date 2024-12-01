@@ -44,7 +44,6 @@ api.interceptors.response.use(
         console.log(err);
         // 리프레시 토큰도 만료된 경우 로그아웃 처리
         await JWTManager.clearTokens();
-        // 로그인 페이지로 리다이렉트 로직 추가
       }
     }
 

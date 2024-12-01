@@ -21,6 +21,9 @@ const Register: React.FC = () => {
     last_name: '',
     gender: '',
     vegan: false,
+    height: 0,
+    duration: 0,
+    goal: 0,
   });
 
   const handleChange = (name: string, value: string | boolean) => {
@@ -28,12 +31,29 @@ const Register: React.FC = () => {
   };
 
   const handleSubmit = async () => {
-    console.log(form);
-    const response = await api.post('/account/signup', form);
-    console.log(response);
+    try {
+      const signupResponse = await api.post('/account/signup', {
+        email: form.email,
+        password: form.password,
+        first_name: form.first_name,
+        last_name: form.last_name,
+        gender: form.gender,
+        vegan: form.vegan,
+      });
 
-    if (response.status === 201) {
-      navigation.navigate('Login');
+      if (signupResponse.status === 201) {
+        const bodyInfoResponse = await api.post('/exercise/body_info', {
+          height: parseInt(form.height),
+          duration: parseInt(form.duration),
+          goal: parseInt(form.goal),
+        });
+
+        if (bodyInfoResponse.status === 200) {
+          navigation.navigate('Login');
+        }
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
     }
   };
 
@@ -76,6 +96,35 @@ const Register: React.FC = () => {
           <Text style={styles.label}>Woman</Text>
           <CheckBox value={form.vegan} onValueChange={value => handleChange('vegan', value)} />
           <Text style={styles.label}>Vegan</Text>
+        </SafeAreaView>
+
+        <InputBtn
+          placeholder='Height (cm)'
+          keyboardType='numeric'
+          onChangeText={value => handleChange('height', value)}
+        />
+        <InputBtn
+          placeholder='Exercise Duration (minutes)'
+          keyboardType='numeric'
+          onChangeText={value => handleChange('duration', value)}
+        />
+        <SafeAreaView style={styles.goalContainer}>
+          <Text style={styles.label}>Goal:</Text>
+          <CheckBox
+            value={form.goal === -1}
+            onValueChange={value => handleChange('goal', value ? -1 : 0)}
+          />
+          <Text style={styles.label}>Diet</Text>
+          <CheckBox
+            value={form.goal === 0}
+            onValueChange={value => handleChange('goal', value ? 0 : null)}
+          />
+          <Text style={styles.label}>Maintain</Text>
+          <CheckBox
+            value={form.goal === 1}
+            onValueChange={value => handleChange('goal', value ? 1 : 0)}
+          />
+          <Text style={styles.label}>Bulk Up</Text>
         </SafeAreaView>
       </SafeAreaView>
       <SafeAreaView style={styles.confirm}>
@@ -126,6 +175,15 @@ const styles = StyleSheet.create({
   label: {
     margin: 10,
     color: '#fff',
+  },
+  goalContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  label: {
+    color: '#fff',
+    marginHorizontal: 5,
   },
 });
 

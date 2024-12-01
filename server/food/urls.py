@@ -20,4 +20,5 @@ urlpatterns = [
     path('select_food', selectFood, name='selectFood'),
     ###path('login', login, name = 'login'),
     ###path('user/id/<int:id>', UserID.as_view(),name ='id')
+    # path('analyze/', FoodTextAnalysis.as_view(), name='food-text-analysis'),
 ]

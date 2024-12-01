@@ -16,6 +16,7 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import LinearGradient from 'react-native-linear-gradient'; // Linear Gradient 사용
+import api from '../api/axiosConfig';
 
 interface Message {
   id: string;
@@ -27,14 +28,14 @@ export default function ChatRoom(): React.ReactElement {
   const navigation = useNavigation();
 
   const [messages, setMessages] = useState<Message[]>([
-    {id: '1', text: 'What kind of things you want to eat?', sender: 'ai'},
-    {id: '3', text: 'I want protein for to night!', sender: 'user'},
-    {id: '4', text: 'Click your meal  😊', sender: 'ai'},
-    {id: '4', text: 'chicken breast', sender: 'ai'},
-    {id: '4', text: 'beef steak', sender: 'ai'},
-    {id: '4', text: 'Milk with cereals', sender: 'ai'},
-    {id: '4', text: 'Grilled Mackerel', sender: 'ai'},
-    {id: '4', text: 'I dont want all of them', sender: 'ai'},
+    // {id: '1', text: 'What kind of things you want to eat?', sender: 'ai'},
+    // {id: '3', text: 'I want protein for to night!', sender: 'user'},
+    // {id: '4', text: 'Click your meal  😊', sender: 'ai'},
+    // {id: '4', text: 'chicken breast', sender: 'ai'},
+    // {id: '4', text: 'beef steak', sender: 'ai'},
+    // {id: '4', text: 'Milk with cereals', sender: 'ai'},
+    // {id: '4', text: 'Grilled Mackerel', sender: 'ai'},
+    // {id: '4', text: 'I dont want all of them', sender: 'ai'},
   ]);
   const [inputText, setInputText] = useState('');
 
@@ -73,25 +74,55 @@ export default function ChatRoom(): React.ReactElement {
     }
   }, [inputText, fadeAnim, scaleAnim]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (inputText.trim() !== '') {
+      // 사용자 메시지 추가
       const newMessage: Message = {
         id: `${messages.length + 1}`,
         text: inputText,
         sender: 'user',
       };
-      setMessages([...messages, newMessage]);
-      setInputText('');
+      setMessages(prevMessages => [...prevMessages, newMessage]);
 
-      // Simulate AI response (This would usually come from the server)
-      setTimeout(() => {
-        const aiMessage: Message = {
+      try {
+        // 설정된 api 인스턴스로 요청
+        const response = await api.post('/food/food_text', {
+          text: inputText,
+        });
+        console.log(response.data.keywords);
+
+        // API 응답으로 받은 음식 목록을 채팅창에 표시
+        if (response.data.foods && Array.isArray(response.data.foods)) {
+          // AI 응답 메시지 추가
+          const aiMessage: Message = {
+            id: `${messages.length + 2}`,
+            text: '추천 음식 리스트입니다:',
+            sender: 'ai',
+          };
+          setMessages(prevMessages => [...prevMessages, aiMessage]);
+
+          // 각 추천 음식을 개별 메시지로 추가
+          response.data.foods.forEach((food: string, index: number) => {
+            const foodMessage: Message = {
+              id: `${messages.length + 3 + index}`,
+              text: food,
+              sender: 'ai',
+            };
+            setMessages(prevMessages => [...prevMessages, foodMessage]);
+          });
+        }
+      } catch (error) {
+        console.error('API 요청 실패:', error);
+        const errorMessage: Message = {
           id: `${messages.length + 2}`,
-          text: 'This is an AI response to your message.',
+          text: '죄송합니다. 현재 요청을 처리할 수 없습니다.',
           sender: 'ai',
         };
-        setMessages(prevMessages => [...prevMessages, aiMessage]);
-      }, 1000);
+        setMessages(prevMessages => [...prevMessages, errorMessage]);
+      }
+
+      // 입력창 초기화
+      setInputText('');
     }
   };
 

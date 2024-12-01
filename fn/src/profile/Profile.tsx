@@ -7,6 +7,8 @@ import {useUserStore} from '../store/userStore.tsx';
 import AllergyRegistration from '../components/AllergyRegistration.tsx';
 import WeightRegistration from '../components/WeightRegistration.tsx';
 import MuscleRegistration from '../components/MuscleRegistration.tsx';
+import LinearGradient from 'react-native-linear-gradient';
+import {BlurView} from '@react-native-community/blur';
 
 type RootStackParamList = {
   Login: undefined;
@@ -68,22 +70,78 @@ export default function Profile(): React.JSX.Element {
           <InfoRow label='Allergy Registered' value={userInfo.registered_allergy ? 'Yes' : 'No'} />
         </View>
 
-        <TouchableOpacity style={styles.actionButton} onPress={() => setWeightModalVisible(true)}>
-          <Text style={styles.actionButtonText}>Register Weight</Text>
+        <TouchableOpacity style={styles.menuItem} onPress={() => setWeightModalVisible(true)}>
+          <BlurView
+            style={styles.blurContainer}
+            blurType='dark'
+            blurAmount={10}
+            reducedTransparencyFallbackColor='transparent'
+          >
+            <LinearGradient
+              colors={['#007AFF50', '#0055FF50']}
+              style={styles.gradientButton}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 1}}
+            >
+              <Text style={styles.buttonText}>Register Weight</Text>
+            </LinearGradient>
+          </BlurView>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.actionButton} onPress={() => setMuscleModalVisible(true)}>
-          <Text style={styles.actionButtonText}>Register Muscle Information</Text>
+        <TouchableOpacity style={styles.menuItem} onPress={() => setMuscleModalVisible(true)}>
+          <BlurView
+            style={styles.blurContainer}
+            blurType='dark'
+            blurAmount={10}
+            reducedTransparencyFallbackColor='transparent'
+          >
+            <LinearGradient
+              colors={['#007AFF50', '#0055FF50']}
+              style={styles.gradientButton}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 1}}
+            >
+              <Text style={styles.buttonText}>Register Muscle Information</Text>
+            </LinearGradient>
+          </BlurView>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.allergyButton} onPress={() => setAllergyModalVisible(true)}>
-          <Text style={styles.allergyButtonText}>
-            {userInfo.registered_allergy ? 'Fix Allergic foods' : 'Register Allergic'}
-          </Text>
+        <TouchableOpacity style={styles.menuItem} onPress={() => setAllergyModalVisible(true)}>
+          <BlurView
+            style={styles.blurContainer}
+            blurType='dark'
+            blurAmount={10}
+            reducedTransparencyFallbackColor='transparent'
+          >
+            <LinearGradient
+              colors={['#007AFF50', '#0055FF50']}
+              style={styles.gradientButton}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 1}}
+            >
+              <Text style={styles.buttonText}>
+                {userInfo.registered_allergy ? 'Fix Allergic foods' : 'Register Allergic'}
+              </Text>
+            </LinearGradient>
+          </BlurView>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
+        <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
+          <BlurView
+            style={styles.blurContainer}
+            blurType='dark'
+            blurAmount={10}
+            reducedTransparencyFallbackColor='transparent'
+          >
+            <LinearGradient
+              colors={['#e74c3c50', '#c0392b50']}
+              style={styles.gradientButton}
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 1}}
+            >
+              <Text style={styles.buttonText}>Logout</Text>
+            </LinearGradient>
+          </BlurView>
         </TouchableOpacity>
       </ScrollView>
 
@@ -154,45 +212,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  allergyButton: {
-    backgroundColor: '#444',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  allergyButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  logoutButton: {
-    backgroundColor: '#e74c3c',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
   loadingText: {
     color: '#f3f3f3',
     fontSize: 16,
     textAlign: 'center',
     marginTop: 20,
   },
-  actionButton: {
-    backgroundColor: '#007AFF',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
+  menuItem: {
+    height: 56,
     marginBottom: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
-  actionButtonText: {
-    color: '#fff',
+  blurContainer: {
+    flex: 1,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  gradientButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+  },
+  buttonText: {
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
 });

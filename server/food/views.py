@@ -18,11 +18,26 @@ from django.utils import timezone
 from django.db import IntegrityError
 from django.db.models import Sum
 
+import pandas as pd
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from nltk import pos_tag
+import string
+import spacy
+from collections import Counter
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+from sklearn.metrics.pairwise import cosine_similarity
 
 #from .models import User
 from .models import *
 
+import os
+
 # Create your views here.
+
+nlp = spacy.load("en_core_web_sm")
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
@@ -168,7 +183,23 @@ def foodText(request):
     user = request.user
     text = request.data.get('text')
     goal = UserBodyInfo.objects.get(user_id = user.id).goal
+    
     calorie_bound = user.calorie_bound
+    keywords = extract_keywords(text if isinstance(text,str) else extract_keywords(""))
+    keywords = remove_duplicates(keywords)
+    keywords = [keyword for keyword in keywords if len(keyword) > 2]
+    non_food_keywords_path = os.path.join(os.path.dirname(__file__), "unrelated_words.txt")
+    with open(non_food_keywords_path, "r") as file:
+        non_food_keywords = set(file.read().splitlines())
+
+    keywords = [word for word in keywords if word not in non_food_keywords]
+
+    non_food_keywords_path = os.path.join(os.path.dirname(__file__), "unrelated_words.txt")
+    with open(non_food_keywords_path, "r") as file:
+        non_food_keywords = set(file.read().splitlines())
+
+    keywords = [word for word in keywords if word not in non_food_keywords]
+    print(keywords)
     #ai returns foods
     food_list = []
     return_list = []
@@ -275,3 +306,42 @@ def calculate_calorie_bound(user):
             calorie_bound = sum(calorieList)/len(calorieList)
             user.calorie_bound = calorie_bound / 5
             user.save()
+
+def preprocess_text(text):
+    lemmatizer = WordNetLemmatizer()
+    stop_words = set(stopwords.words("english"))
+    tokens = nltk.word_tokenize(text)
+
+    lemmas = []
+    for token in tokens:
+        if token.lower() not in stop_words and token.isalpha():
+            lemma = lemmatizer.lemmatize(token.lower())
+            lemmas.append(lemma)
+    return lemmas
+
+def get_nouns(tokens):
+    pos_tags = pos_tag(tokens)
+    nouns = []
+    for word, pos in pos_tags:
+        if pos.startswith('NN'):
+            nouns.append(word)
+    return nouns
+
+
+def get_entities(text):
+    doc = nlp(text)
+    entities = [ent.text for ent in doc.ents]
+    return entities
+
+
+def extract_keywords(text):
+    lemmas = preprocess_text(text)
+    nouns = get_nouns(lemmas)
+    entities = get_entities(text)
+    relevant_keywords = list(set(nouns + entities))
+    return relevant_keywords
+
+def remove_duplicates(keywords):
+    if isinstance(keywords, list):
+        return list(set(keywords))
+    return keywords  
