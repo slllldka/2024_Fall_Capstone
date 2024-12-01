@@ -5,12 +5,13 @@ from django.utils import timezone
 
 # Create your models here.
 class CustomMananger(BaseUserManager):
-    def create_user(self, password = None, **extra_fields):
-            user = self.model(**extra_fields)
-            if password:
-                user.set_password(password)
-            user.save(using=self._db)
-            return user
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('이메일은 필수입니다')
+        user = self.model(email=self.normalize_email(email), **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
     
     #  Create a superuser
     def create_superuser(self, email, password=None, **extra_fields):

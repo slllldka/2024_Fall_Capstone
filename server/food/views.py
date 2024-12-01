@@ -38,7 +38,7 @@ import os
 # Create your views here.
 
 nlp = spacy.load("en_core_web_sm")
-
+keyword_list = ['eggplant', 'mildness', 'cut', 'gamjajeon', 'Janchi Guksu', 'chashu', 'shallot', 'content', 'Mozzarella', 'Spring Rolls', 'rakkyo', 'Galbi', 'tangsuyuk', 'appetizer', 'wrapping', 'ponzu', 'Kimchi', 'Octopus', 'tallow', 'Tonkatsu', 'sweetness', 'cheddar', 'garlic', 'godeungeo', 'food', 'Katsudon', 'block', 'spring', 'panko', 'paper', 'kombu', 'ssamjang', 'sesame', 'absorbing', 'eater', 'person', 'liquid', 'ham', 'lemon', 'samgyetang', 'another year in age', 'retains', 'pizza', 'fruit', 'ice', 'chewy', 'tartar', 'bit', 'Shabu', 'jjim', 'kimbap', 'Dumpling Soup', 'Ojingeo Bokkeum', 'Tomato Pasta', 'deopbap', 'Samgyeopsal Rice Bowl', 'vinaigrette', 'pork', 'selection', 'pot', 'Beef Brisket', 'Curry Rice', 'buttery', 'the hot summer months', 'bokkeum', 'barbecue', 'Doenjang Jjigae', 'Bibim Naengmyeon', 'sea', 'fiery', 'thai', 'richness', 'mozzarella', 'Cutlet', 'color', 'bread', 'spine', 'item', 'Sundubu Jjigae', 'yolk', 'blood', 'tenderloin', 'meld', 'ranch', 'Pork Bowl', 'Jjajangbap', 'onion', 'briny', 'offer', 'Army Stew', 'infuses', 'seaweed', 'Offal Hot Pot', 'Galbi Jjim', 'goma', 'tanginess', 'cabbage', 'dough', 'powder', 'bun', 'street', 'motsunabe', 'aglio', 'extract', 'Chinese', 'war', 'cake', 'icy', 'Braised Chicken', 'prawn', 'format', 'tender', 'nut', 'leafy', 'cold', 'katsudon', 'Bibim Guksu*', 'sourness', 'absorbs', 'Gamjatang', 'Braised Short Ribs', 'clam', 'sandwich', 'basil', 'jjimdak', 'bean', 'ramen', 'Samgyetang', 'janchi', 'bonito', 'cleanser', 'cuốn', 'infusing', 'Fish Cake Soup', 'water', 'velvety', 'beef', 'carrot', 'Beef Intestines', 'specialty', 'energy', 'protein', 'thickens', 'shoyu', 'dumpling', 'chilly days', 'bibimbap', 'cream', 'budae', 'bulgogi', 'roux', 'salmon', 'first', 'soup', 'Caesar', 'freshness', 'oregano', 'gochugaru', 'spam', 'beer', 'daikon', 'peppercorn', 'mix', 'tangy', 'perilla', 'Chashu Don', 'brown', 'broth', 'Garlic', 'eating', 'touch', 'nigiri', 'Roe', 'Dakgalbi', 'Bean Sprout Soup', 'Seolleongtang', 'stick', 'parsley', 'shichimi togarashi', 'soybean', 'Worcestershire', 'dog', 'lighter', 'character', 'Pork Bone Soup', 'starchy', 'sprinkle', 'strip', 'outer', 'kimchi', 'Parmesan', 'crispy', 'vegetable', 'crispiness', 'the summer months', 'juice', 'mayonnaise', 'stock', 'temperature', 'seafood', 'Don', 'ketchup', 'leaf', 'japchae', 'Black Bean Sauce', 'Spicy Cold Noodles', 'enhances', 'Tempura Rice Bowl', 'simple', 'end', 'tempura', 'enjoyed', 'resilience', 'Nakji Bokkeum*', 'avocado', 'mayo', 'gooey', 'Cold Raw Fish Soup', 'brisket', 'note', 'Rice Bowl', 'melt', 'grain', 'cucumber', 'array', 'herb', 'breadcrumb', 'brings', 'Rice Cake Soup', 'spinach', 'lettuce', 'Spicy Seafood Noodles', 'pickle', 'hint', 'Sichuan', 'soy', 'turkey', 'panini', 'twist', 'bibim', 'indulgent', 'Japchaebap', 'Korean', 'doenjang', 'combine', 'hoisin', 'age', 'colder', 'roll', 'worldwide', 'neck', 'guksu', 'shine', 'version', 'ginseng', 'zucchini', 'Boiled Pork Slices', 'Oil Pasta', 'jjamppong', 'snack', 'Black Bean Noodles', 'flour', 'odeng', 'American', 'gỏi', 'jeyuk', 'mixture', 'chili', 'splash', 'Beef', 'Ginseng Chicken Soup', 'earthy', 'brininess', 'Jeyuk Deopbap', 'aroma', 'corn', 'cheese', 'weather', 'lime', 'tasty', 'parmesan', 'form', 'balancing', 'jujubes', 'colorful', 'elegance', 'gaminess', 'grill', 'tomato', 'army', 'mapo', 'sichuan', 'Layered Hot Pot', 'Ikura Don*', 'skirt', 'jjajangbap', 'level', 'cumin', 'vermicelli noodles', 'Sashimi', 'Pork Cutlet', 'vinegar', 'worcestershire', 'mustard', 'Odeng Tang', 'dashi', 'Mapo Tofu', 'Rice', 'Clam Knife-Cut Noodles', 'tonkatsu', 'nuttiness', 'months', 'iron', 'chunjang', 'wheat', 'chấm', 'kelp', 'tuna', 'jjigae', 'sake', 'raw', 'squid', 'wrap', 'shoga', 'turn', 'seolleongtang', 'tofu', 'loin', 'Margherita', 'wasabi', 'complement', 'Kimchi Jjigae', 'include', 'lends', 'dakgalbi', 'spice', 'Korea', 'luck', 'bell pepper', 'Gyudon', 'spicy', 'Vietnamese', 'pancake', 'tteokguk', 'fish', 'banquet', 'stomach', 'stew', 'beaten', 'mala', 'tilapia', 'depth', 'spiciness', 'palate', 'seven', 'gochujang', 'lock', 'Tteokbokki', 'buckwheat', 'Tangsuyuk', 'butter', 'gukbap', 'rib', 'chewiness', 'cod', 'coat', 'Tteokguk', 'colder days', 'release', 'Suyuk', 'egg', 'burger', 'arrangement', 'cook', 'starch', 'orange', 'kare', 'deeply', 'Classic', 'breast', 'curry', 'Chicken Feet', 'roe', 'sujebi', 'mignon', 'drizzle', 'Soft Tofu Stew', 'chop', 'contribute', 'crisp', 'hearty', 'acidity', 'squeeze', 'chunk', 'dash', 'Sujebi', 'mussel', 'Mul Naengmyeon', 'Dough Soup', 'ginkgo', 'yellowtail', 'vermicelli', 'Japanese', 'snapper', 'cuisine', 'ginger', 'delicate', 'suyuk', 'shrimp', 'tendon', 'nori', 'Pork Cutlet Bowl', 'center', 'fusion', 'seed', 'jjajangmyeon', 'miso', 'shell', 'Godeungeo Jorim', 'potato', 'patty', 'gamjatang', 'crab', 'mild', 'mint', 'broths', 'dollop', 'sausage', 'arugula', 'render', 'creaminess', 'sauce', 'skin', 'Maillard', 'cold days', 'jjajang', 'webfoot', 'Diners', 'Cold Noodles', 'Suyuk Gukbap', 'Ramen', 'syrup', 'custardy', 'scallion', 'strand', 'Broth', 'Fish Cutlet', 'medley', 'appeal', 'Mulhoe', 'warmth', 'pepperoni', 'everything', 'subtle', 'Mixed Rice', 'teriyaki', 'ikura', 'club', 'sprout', 'sundubu', 'five', 'Jeyuk Bokkeum', 'konjac', 'gyudon', 'endless', 'year', 'highlight', 'naengmyeon', 'jorim', 'sharing', 'pan', 'salty', 'crunchy', 'Jjamppong', 'remains', 'tang', 'mulhoe', 'sushi', 'sensation', 'Jjajangmyeon', 'Cream Pasta', 'Japan', 'smoky', 'galbi', 'refreshing', 'mushroom', 'flake', 'creamy', 'Sukiyaki', 'cilantro', 'add', 'chilies', 'japan', 'light', 'sugar', 'sheet', 'doubanjiang', 'crispy tempura', 'shirataki', 'mirin', 'caesar', 'Sweet', 'scallop', 'bajirak', 'duck', 'Banquet Noodles', 'mackerel', 'sundae', 'Salmon Rice Bowl', 'Spicy Pork Rice Bowl', 'pear', 'kick', 'oil', 'offal', 'numbing', 'day', 'Indian', 'coleslaw', 'cooking', 'nabe', 'tteokbokki', 'Kimchi Stew', 'burst', 'honey', 'japchaebap', 'foot', 'Mille', 'tonkotsu', 'Spicy Stir', 'Korean-Chinese', 'chestnut', 'sashimi', 'tentsuyu', 'octopus', 'meat', 'thick', 'Beef Bowl', 'shiso', 'apple', 'stone', 'sukiyaki', 'region', 'prepare', 'ground', 'flaky', 'pasta', 'Tendon', 'diner', 'dinner', 'crust', 'tteok', 'pop', 'noodle', 'date', 'year-round', 'Korean New Year', 'bed', 'salt', 'section', 'invigorating', 'property', 'bacon', 'batter', 'haddock', 'sweet', 'maillard', 'Sundae Gukbap', 'gourmet', 'hamburger', 'Glass Noodles', 'ease', 'paste', 'chicken', 'cutlet', 'Jjimdak', 'filling', 'samgyeopsal', 'salad', 'Italian', 'Budae Jjigae', 'bone', 'mul', 'pepper', 'herbal', 'versatility', 'infuse', 'the Korean War', 'promote', 'deep', 'fillet', 'Pork Belly Rice Bowl', 'soak', 'saltiness', 'versatile', 'Chicken', 'Gamjajeon', 'table', 'bar', 'coating', 'citrus', 'Braised Fish', 'peanut', 'collagen', 'Bone Soup', 'flounder', 'Rice Rolls', 'blend', 'dangmyeon', 'Spam', 'substance', 'steak', 'intestine', 'Rice Cakes', 'warm', 'anchovy', 'Thai', 'bamboo', 'meatiness', 'tenderness', 'filet', 'bream', 'contrast', 'showcase', 'Kare Raisu', 'summer', 'bite', 'dip', 'Sour Pork', 'shio', 'cornstarch', 'nutmeg', 'rice', 'korea', 'roast', 'eaten']
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def userAllergy(request):
@@ -182,8 +182,8 @@ def checkVegan(request):
 def foodText(request):
     user = request.user
     text = request.data.get('text')
-    goal = UserBodyInfo.objects.get(user_id = user.id).goal
-    
+    # goal = UserBodyInfo.objects.get(user_id = user.id).goal
+    goal = 0
     calorie_bound = user.calorie_bound
     keywords = extract_keywords(text if isinstance(text,str) else extract_keywords(""))
     keywords = remove_duplicates(keywords)
@@ -199,7 +199,11 @@ def foodText(request):
         non_food_keywords = set(file.read().splitlines())
 
     keywords = [word for word in keywords if word not in non_food_keywords]
-    print(keywords)
+    matching_keywords = [keyword for keyword in keyword_list if keyword in text]
+    final_keywords = list(set(keywords + matching_keywords))
+    print(final_keywords)
+    sentiment_results = aspect_based_sentiment_analysis(text, final_keywords)
+    print(sentiment_results)
     #ai returns foods
     food_list = []
     return_list = []
@@ -345,3 +349,27 @@ def remove_duplicates(keywords):
     if isinstance(keywords, list):
         return list(set(keywords))
     return keywords  
+
+def aspect_based_sentiment_analysis(text, aspects):
+    model_name = 'yangheng/deberta-v3-large-absa-v1.1'
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    sentiment_results = {}
+
+    for aspect in aspects:
+        aspect_text = f"{text} [SEP] {aspect}"
+        inputs = tokenizer(aspect_text, return_tensors='pt', truncation=True)
+        outputs = model(**inputs)
+        logits = outputs.logits
+
+        negative_logit = logits[0][0].item()
+        positive_logit = logits[0][2].item()
+
+        if positive_logit > negative_logit:
+            sentiment = "positive"
+        else:
+            sentiment = "negative"
+
+        sentiment_results[aspect] = sentiment
+
+    return sentiment_results
