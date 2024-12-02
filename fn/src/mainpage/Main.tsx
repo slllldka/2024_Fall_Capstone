@@ -7,6 +7,9 @@ import {useUserStore} from '../store/userStore';
 import AllergyRegistration from '../components/AllergyRegistration';
 import LinearGradient from 'react-native-linear-gradient';
 import {BlurView} from '@react-native-community/blur';
+import BodyInfoRegistration from '../components/BodyInfoRegistration';
+import useBodyInfoStore from '../store/bodyInfoStore';
+import api from '../api/axiosConfig';
 
 type RootStackParamList = {
   Main: undefined;
@@ -38,6 +41,9 @@ export default function Main(): React.ReactElement {
   const [allergyModalVisible, setAllergyModalVisible] = useState(false);
   const userInfo = useUserStore(state => state.userInfo);
   const fetchUserInfo = useUserStore(state => state.fetchUserInfo);
+  const [showBodyInfoModal, setShowBodyInfoModal] = useState(false);
+  const hasBodyInfo = useBodyInfoStore(state => state.hasBodyInfo);
+  const setHasBodyInfo = useBodyInfoStore(state => state.setHasBodyInfo);
 
   useEffect(() => {
     const checkAllergyStatus = async () => {
@@ -49,6 +55,26 @@ export default function Main(): React.ReactElement {
 
     checkAllergyStatus();
   }, []);
+
+  useEffect(() => {
+    checkBodyInfo();
+  }, []);
+
+  const checkBodyInfo = async () => {
+    try {
+      const response = await api.get('/exercise/body_info');
+      if (response.status === 404) {
+        setShowBodyInfoModal(true);
+      } else {
+        setHasBodyInfo(true);
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        setShowBodyInfoModal(true);
+      }
+      console.error('Body info check failed:', error);
+    }
+  };
 
   const menuItems = [
     {
@@ -141,6 +167,13 @@ export default function Main(): React.ReactElement {
         visible={allergyModalVisible}
         onClose={() => setAllergyModalVisible(false)}
       />
+
+      {!hasBodyInfo && (
+        <BodyInfoRegistration
+          visible={showBodyInfoModal}
+          onClose={() => setShowBodyInfoModal(false)}
+        />
+      )}
     </SafeAreaView>
   );
 }

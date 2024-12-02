@@ -201,11 +201,31 @@ def foodText(request):
     keywords = [word for word in keywords if word not in non_food_keywords]
     matching_keywords = [keyword for keyword in keyword_list if keyword in text]
     final_keywords = list(set(keywords + matching_keywords))
-    print(final_keywords)
+    
     sentiment_results = aspect_based_sentiment_analysis(text, final_keywords)
-    print(sentiment_results)
-    #ai returns foods
-    food_list = []
+    
+    positive_word = [food for food, sentiment in sentiment_results.items() if sentiment == 'positive']
+    negative_word = [food for food, sentiment in sentiment_results.items() if sentiment == 'negative']
+    
+    file_path = os.path.join(os.path.dirname(__file__), "updated_food_data.csv")
+    updated_food_data_df = pd.read_csv(file_path)
+    
+    allergy_list = []
+    allergy_id_set = UserAllergy.objects.filter(user_id = user.id).values('allergy_id')
+    for allergy in allergy_id_set:
+        allergy_name = Allergy.objects.filter(id=allergy['allergy_id']).values('name').get()
+        allergy_list.append(allergy_name['name'])
+    
+    updated_food_data_df['positive_food_count'] = updated_food_data_df['keywords'].apply(
+        lambda keywords: -2 if any(keyword.strip() in allergy_list for keyword in keywords.split(','))
+        else -1 if any(keyword.strip() in negative_word for keyword in keywords.split(','))
+        else sum(1 for keyword in keywords.split(',') if keyword.strip() in positive_word)
+    )
+
+    sorted_df = updated_food_data_df.sort_values(by='positive_food_count', ascending=False)
+    food_list = sorted_df['english_name'].head(10).tolist()
+    print(food_list)
+
     return_list = []
     for food in food_list:
         if calorie_bound > 0:
@@ -222,8 +242,8 @@ def foodText(request):
             
         if len(return_list) == 5:
             break
-    
-    return Response({'text':text, 'foods':['list', 'of', 'foods']})
+    print(return_list)
+    return Response({'foods':return_list})
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])

@@ -89,7 +89,6 @@ export default function ChatRoom(): React.ReactElement {
         const response = await api.post('/food/food_text', {
           text: inputText,
         });
-        console.log(response.data.keywords);
 
         // API 응답으로 받은 음식 목록을 채팅창에 표시
         if (response.data.foods && Array.isArray(response.data.foods)) {

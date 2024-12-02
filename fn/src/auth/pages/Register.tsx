@@ -42,15 +42,7 @@ const Register: React.FC = () => {
       });
 
       if (signupResponse.status === 201) {
-        const bodyInfoResponse = await api.post('/exercise/body_info', {
-          height: parseInt(form.height),
-          duration: parseInt(form.duration),
-          goal: parseInt(form.goal),
-        });
-
-        if (bodyInfoResponse.status === 200) {
-          navigation.navigate('Login');
-        }
+        navigation.navigate('Login');
       }
     } catch (error) {
       console.error('Registration error:', error);
