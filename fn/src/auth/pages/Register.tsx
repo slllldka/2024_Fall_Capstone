@@ -21,9 +21,6 @@ const Register: React.FC = () => {
     last_name: '',
     gender: '',
     vegan: false,
-    height: 0,
-    duration: 0,
-    goal: 0,
   });
 
   const handleChange = (name: string, value: string | boolean) => {
@@ -59,13 +56,11 @@ const Register: React.FC = () => {
 
       <SafeAreaView style={styles.body}>
         <InputBtn placeholder='email' onChangeText={value => handleChange('email', value)} />
-
         <InputBtn
           placeholder='Password'
           secureTextEntry
           onChangeText={value => handleChange('password', value)}
         />
-
         <InputBtn
           placeholder='First Name'
           onChangeText={value => handleChange('first_name', value)}
@@ -89,36 +84,8 @@ const Register: React.FC = () => {
           <CheckBox value={form.vegan} onValueChange={value => handleChange('vegan', value)} />
           <Text style={styles.label}>Vegan</Text>
         </SafeAreaView>
-
-        <InputBtn
-          placeholder='Height (cm)'
-          keyboardType='numeric'
-          onChangeText={value => handleChange('height', value)}
-        />
-        <InputBtn
-          placeholder='Exercise Duration (minutes)'
-          keyboardType='numeric'
-          onChangeText={value => handleChange('duration', value)}
-        />
-        <SafeAreaView style={styles.goalContainer}>
-          <Text style={styles.label}>Goal:</Text>
-          <CheckBox
-            value={form.goal === -1}
-            onValueChange={value => handleChange('goal', value ? -1 : 0)}
-          />
-          <Text style={styles.label}>Diet</Text>
-          <CheckBox
-            value={form.goal === 0}
-            onValueChange={value => handleChange('goal', value ? 0 : null)}
-          />
-          <Text style={styles.label}>Maintain</Text>
-          <CheckBox
-            value={form.goal === 1}
-            onValueChange={value => handleChange('goal', value ? 1 : 0)}
-          />
-          <Text style={styles.label}>Bulk Up</Text>
-        </SafeAreaView>
       </SafeAreaView>
+
       <SafeAreaView style={styles.confirm}>
         <BlueBtn title='Submit' onPress={handleSubmit} />
       </SafeAreaView>
@@ -167,15 +134,6 @@ const styles = StyleSheet.create({
   label: {
     margin: 10,
     color: '#fff',
-  },
-  goalContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  label: {
-    color: '#fff',
-    marginHorizontal: 5,
   },
 });
 

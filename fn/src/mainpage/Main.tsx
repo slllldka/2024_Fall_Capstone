@@ -8,8 +8,8 @@ import AllergyRegistration from '../components/AllergyRegistration';
 import LinearGradient from 'react-native-linear-gradient';
 import {BlurView} from '@react-native-community/blur';
 import BodyInfoRegistration from '../components/BodyInfoRegistration';
-import useBodyInfoStore from '../store/bodyInfoStore';
 import api from '../api/axiosConfig';
+import WeightRegistration from '../components/WeightRegistration';
 
 type RootStackParamList = {
   Main: undefined;
@@ -42,39 +42,64 @@ export default function Main(): React.ReactElement {
   const userInfo = useUserStore(state => state.userInfo);
   const fetchUserInfo = useUserStore(state => state.fetchUserInfo);
   const [showBodyInfoModal, setShowBodyInfoModal] = useState(false);
-  const hasBodyInfo = useBodyInfoStore(state => state.hasBodyInfo);
-  const setHasBodyInfo = useBodyInfoStore(state => state.setHasBodyInfo);
+  const [showWeightModal, setShowWeightModal] = useState(false);
 
+  const handleAllergyClose = () => {
+    console.log('Allergy modal closed');
+    setAllergyModalVisible(false);
+    if (!userInfo?.registered_body_info) {
+      console.log('Opening body info modal');
+      setShowBodyInfoModal(true);
+    }
+  };
+
+  let flag = false;
   useEffect(() => {
-    const checkAllergyStatus = async () => {
+    const checkUserStatus = async () => {
       await fetchUserInfo();
-      if (userInfo && !userInfo.registered_allergy) {
-        setAllergyModalVisible(true);
+      console.log('Fetched user info:', userInfo);
+      console.log('');
+      if (userInfo) {
+        if (!userInfo.registered_allergy) {
+          console.log('Opening allergy modal');
+          setAllergyModalVisible(true);
+          flag = true;
+        } else if (!userInfo.registered_body_info) {
+          console.log('Opening body info modal');
+          setShowBodyInfoModal(true);
+        }
       }
     };
 
-    checkAllergyStatus();
-  }, []);
+    checkUserStatus();
+  }, [flag, userInfo?.registered_allergy, userInfo?.registered_body_info]);
 
   useEffect(() => {
-    checkBodyInfo();
-  }, []);
+    const checkWeight = async () => {
+      try {
+        const response = await api.get('/exercise/weight');
+        console.log('Weight:', response.data.weights);
 
-  const checkBodyInfo = async () => {
-    try {
-      const response = await api.get('/exercise/body_info');
-      if (response.status === 404) {
-        setShowBodyInfoModal(true);
-      } else {
-        setHasBodyInfo(true);
+        if (response.data.weights && response.data.weights.length > 0) {
+          const latestDate = new Date(response.data.weights[0].date);
+          const today = new Date();
+          const diffDays = Math.floor(
+            (today.getTime() - latestDate.getTime()) / (1000 * 60 * 60 * 24),
+          );
+
+          if (diffDays >= 5) {
+            navigation.navigate('Profile');
+          }
+        }
+      } catch (error: any) {
+        console.error('체중 정보 조회 실패:', error);
+        if (error.response && error.response.status === 404) {
+          setShowWeightModal(true);
+        }
       }
-    } catch (error) {
-      if (error.response?.status === 404) {
-        setShowBodyInfoModal(true);
-      }
-      console.error('Body info check failed:', error);
-    }
-  };
+    };
+    checkWeight();
+  }, [navigation]);
 
   const menuItems = [
     {
@@ -163,17 +188,13 @@ export default function Main(): React.ReactElement {
         ))}
       </View>
 
-      <AllergyRegistration
-        visible={allergyModalVisible}
-        onClose={() => setAllergyModalVisible(false)}
-      />
+      <AllergyRegistration visible={allergyModalVisible} onClose={handleAllergyClose} />
 
-      {!hasBodyInfo && (
-        <BodyInfoRegistration
-          visible={showBodyInfoModal}
-          onClose={() => setShowBodyInfoModal(false)}
-        />
-      )}
+      <BodyInfoRegistration
+        visible={showBodyInfoModal}
+        onClose={() => setShowBodyInfoModal(false)}
+      />
+      <WeightRegistration visible={showWeightModal} onClose={() => setShowWeightModal(false)} />
     </SafeAreaView>
   );
 }

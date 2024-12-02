@@ -27,13 +27,20 @@ export default function AllergyRegistration({
 
   const handleSubmit = async () => {
     try {
-      console.log({allergies: allergyList});
+      console.log('Submitting allergies:', allergyList);
       await api.post('/food/user_allergy', {allergies: allergyList});
       updateAllergyStatus(true);
       onClose();
     } catch (error) {
       console.error('알러지 등록 실패:', error);
     }
+  };
+
+  const handleCancel = () => {
+    console.log('Cancel button pressed');
+    setAllergyList([]);
+    setCurrentAllergy('');
+    onClose();
   };
 
   return (
@@ -74,7 +81,7 @@ export default function AllergyRegistration({
             >
               <Text style={styles.buttonText}>등록</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onClose}>
+            <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
               <Text style={styles.buttonText}>취소</Text>
             </TouchableOpacity>
           </View>

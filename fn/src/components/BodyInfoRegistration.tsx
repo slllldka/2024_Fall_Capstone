@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Modal, View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import api from '../api/axiosConfig';
-import useBodyInfoStore from '../store/bodyInfoStore';
+import {useUserStore} from '../store/userStore';
 
 interface BodyInfoRegistrationProps {
   visible: boolean;
@@ -9,12 +9,13 @@ interface BodyInfoRegistrationProps {
 }
 
 export default function BodyInfoRegistration({visible, onClose}: BodyInfoRegistrationProps) {
-  const setHasBodyInfo = useBodyInfoStore(state => state.setHasBodyInfo);
   const [form, setForm] = useState({
     height: '',
     duration: '',
     goal: 0,
   });
+
+  const updateBodyInfoStatus = useUserStore(state => state.updateBodyInfoStatus);
 
   const handleSubmit = async () => {
     try {
@@ -25,7 +26,7 @@ export default function BodyInfoRegistration({visible, onClose}: BodyInfoRegistr
       });
 
       if (response.status === 200) {
-        setHasBodyInfo(true);
+        updateBodyInfoStatus(true);
         onClose();
         setForm({height: '', duration: '', goal: 0});
       }
