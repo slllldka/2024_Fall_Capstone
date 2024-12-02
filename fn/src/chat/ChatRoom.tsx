@@ -11,6 +11,8 @@ import {
   Platform,
   SafeAreaView,
   Animated,
+  ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 
 import {useNavigation} from '@react-navigation/native';
@@ -22,7 +24,18 @@ interface Message {
   id: string;
   text: string;
   sender: 'user' | 'ai';
+  isRecommendation?: boolean;
+  isSelected?: boolean;
 }
+
+const GRADIENT_COLORS = [
+  ['#4ECDC4', '#45B7AF'], // 민트
+  ['#FF9A9E', '#FAD0C4'], // 연한 핑크
+  ['#A18CD1', '#FBC2EB'], // 라벤더
+  ['#96E6A1', '#D4FC79'], // 연두
+  ['#FFD1FF', '#FAD0C4'], // 연한 보라
+  ['#FFC3A0', '#FFAFBD'], // 살몬
+];
 
 export default function ChatRoom(): React.ReactElement {
   const navigation = useNavigation();
@@ -38,6 +51,7 @@ export default function ChatRoom(): React.ReactElement {
     // {id: '4', text: 'I dont want all of them', sender: 'ai'},
   ]);
   const [inputText, setInputText] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -74,53 +88,56 @@ export default function ChatRoom(): React.ReactElement {
     }
   }, [inputText, fadeAnim, scaleAnim]);
 
+  const handleFoodSelection = async (selectedFood: string) => {
+    try {
+      const response = await api.post('/food/select_food', {
+        food: selectedFood,
+      });
+
+      if (response.status === 201) {
+        // 선택된 음식 표시
+        setMessages(prevMessages =>
+          prevMessages.map(msg =>
+            msg.text === selectedFood && msg.isRecommendation ? {...msg, isSelected: true} : msg,
+          ),
+        );
+
+        // 선택 확인 메시지 추가
+        const confirmMessage: Message = {
+          id: `${messages.length + 1}`,
+          text: `${selectedFood}를 선택하셨습니다!`,
+          sender: 'ai',
+        };
+        setMessages(prevMessages => [...prevMessages, confirmMessage]);
+      }
+    } catch (error) {
+      console.error('음식 선택 실패:', error);
+    }
+  };
+
   const handleSend = async () => {
     if (inputText.trim() !== '') {
-      // 사용자 메시지 추가
-      const newMessage: Message = {
-        id: `${messages.length + 1}`,
-        text: inputText,
-        sender: 'user',
-      };
-      setMessages(prevMessages => [...prevMessages, newMessage]);
-
+      setLoading(true);
       try {
-        // 설정된 api 인스턴스로 요청
         const response = await api.post('/food/food_text', {
           text: inputText,
         });
 
-        // API 응답으로 받은 음식 목록을 채팅창에 표시
         if (response.data.foods && Array.isArray(response.data.foods)) {
-          // AI 응답 메시지 추가
-          const aiMessage: Message = {
-            id: `${messages.length + 2}`,
-            text: '추천 음식 리스트입니다:',
-            sender: 'ai',
-          };
-          setMessages(prevMessages => [...prevMessages, aiMessage]);
-
-          // 각 추천 음식을 개별 메시지로 추가
-          response.data.foods.forEach((food: string, index: number) => {
-            const foodMessage: Message = {
-              id: `${messages.length + 3 + index}`,
-              text: food,
+          setMessages([
+            {
+              id: '1',
+              text: response.data.foods.join(','),
               sender: 'ai',
-            };
-            setMessages(prevMessages => [...prevMessages, foodMessage]);
-          });
+              isRecommendation: true,
+            },
+          ]);
         }
       } catch (error) {
         console.error('API 요청 실패:', error);
-        const errorMessage: Message = {
-          id: `${messages.length + 2}`,
-          text: '죄송합니다. 현재 요청을 처리할 수 없습니다.',
-          sender: 'ai',
-        };
-        setMessages(prevMessages => [...prevMessages, errorMessage]);
+      } finally {
+        setLoading(false);
       }
-
-      // 입력창 초기화
       setInputText('');
     }
   };
@@ -141,84 +158,96 @@ export default function ChatRoom(): React.ReactElement {
     });
   };
 
+  const renderMessage = ({item}: {item: Message}) => (
+    <View
+      style={[
+        styles.messageContainer,
+        item.sender === 'user' ? styles.userMessage : styles.aiMessage,
+        item.isSelected && styles.selectedMessage,
+      ]}
+    >
+      {item.isRecommendation ? (
+        <TouchableOpacity onPress={() => handleFoodSelection(item.text)} disabled={item.isSelected}>
+          <Text
+            style={[
+              item.sender === 'user' ? styles.userText : styles.aiText,
+              item.isSelected && styles.selectedText,
+            ]}
+          >
+            {item.text}
+          </Text>
+        </TouchableOpacity>
+      ) : (
+        <Text style={item.sender === 'user' ? styles.userText : styles.aiText}>{item.text}</Text>
+      )}
+    </View>
+  );
+
+  const renderFoodRecommendations = (foods: string[]) => (
+    <View style={styles.recommendationsContainer}>
+      <Text style={styles.recommendationTitle}>추천 메뉴</Text>
+      <View style={styles.foodGrid}>
+        {foods.map((food, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.foodCard}
+            onPress={() => handleFoodSelection(food)}
+          >
+            <LinearGradient
+              colors={GRADIENT_COLORS[index % GRADIENT_COLORS.length]}
+              style={styles.foodCardGradient}
+            >
+              <Text style={styles.foodName}>{food}</Text>
+              <Text style={styles.selectText}>선택하기</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        {/* Header */}
-        <SafeAreaView style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
-            <Text style={styles.headerButtonText}>뒤로</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>FLEX Coach</Text>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('Profile')}
-            style={styles.headerButton}
-          >
-            <Text style={styles.headerButtonText}>프로필</Text>
-          </TouchableOpacity>
-        </SafeAreaView>
+      <LinearGradient colors={['#2e2e2e', '#1e1e1e']} style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
+          <Text style={styles.headerButtonText}>뒤로</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>음식 추천</Text>
+        <View style={styles.headerButton} />
+      </LinearGradient>
 
-        {/* Chat List */}
-        <LinearGradient colors={['#1e1e1e', '#222']} style={{flex: 1, paddingTop: 14}}>
-          <FlatList
-            data={messages}
-            keyExtractor={item => item.id}
-            renderItem={({item}) => (
-              <View
-                style={[
-                  styles.messageContainer,
-                  item.sender === 'user' ? styles.userMessage : styles.aiMessage,
-                ]}
-              >
-                <Text style={item.sender === 'user' ? styles.userText : styles.aiText}>
-                  {item.text}
-                </Text>
-              </View>
-            )}
-            contentContainerStyle={{paddingBottom: 20}}
-          />
-        </LinearGradient>
+      <View style={styles.container}>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size='large' color='#4ECDC4' />
+            <Text style={styles.loadingText}>Loading...</Text>
+          </View>
+        ) : (
+          <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
+            {messages.length > 0 &&
+              messages[0].isRecommendation &&
+              renderFoodRecommendations(messages[0].text.split(','))}
+          </ScrollView>
+        )}
 
-        {/* Input Field */}
-        <LinearGradient
-          colors={['#222', '#303030']} // 아래에서 위로 갈수록 색이 연해지도록 설정
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.inputWrapper}
         >
           <View style={styles.inputContainer}>
-            <TouchableOpacity onPress={handleCameraPress} style={styles.addButton}>
-              <Text style={styles.addButtonText}>+</Text>
-            </TouchableOpacity>
-
             <TextInput
-              style={styles.textInput}
+              style={styles.input}
               value={inputText}
               onChangeText={setInputText}
-              placeholder='Type a message...'
+              placeholder='어떤 음식을 찾으시나요?'
               placeholderTextColor='#888'
             />
-
-            {/* Animated Send Button */}
-            {inputText.trim() !== '' && (
-              <Animated.View
-                style={[
-                  styles.sendButton,
-                  {
-                    opacity: fadeAnim, // 애니메이션을 통한 투명도 조절
-                    transform: [{scale: scaleAnim}], // 애니메이션을 통한 크기 조절
-                  },
-                ]}
-              >
-                <TouchableOpacity onPress={handleSend}>
-                  <Text style={styles.sendButtonText}>↑</Text>
-                </TouchableOpacity>
-              </Animated.View>
-            )}
+            <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+              <Text style={styles.sendButtonText}>검색</Text>
+            </TouchableOpacity>
           </View>
-        </LinearGradient>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -226,101 +255,103 @@ export default function ChatRoom(): React.ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#303030',
-  },
-  container: {
-    flex: 1,
     backgroundColor: '#1e1e1e',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    backgroundColor: '#303030',
-  },
-  headerButton: {
-    padding: 10,
-  },
-  headerButtonText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    padding: 15,
+    backgroundColor: '#2e2e2e',
   },
   headerTitle: {
-    color: '#ffffff',
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  messageContainer: {
-    maxWidth: '80%',
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 5,
-    marginHorizontal: 10,
-  },
-  userMessage: {
-    backgroundColor: '#007AFF',
-    alignSelf: 'flex-end',
-  },
-  aiMessage: {
-    backgroundColor: '#f2f2f2',
-    alignSelf: 'flex-start',
-  },
-  userText: {
     color: '#ffffff',
-    fontWeight: '500',
   },
-  aiText: {
-    color: '#000000',
-    fontWeight: '500',
+  container: {
+    flex: 1,
+    backgroundColor: '#1e1e1e',
+  },
+  scrollContainer: {
+    flex: 1,
+    padding: 15,
   },
   inputWrapper: {
-    // borderTopLeftRadius: 20,
-    // borderTopRightRadius: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#333',
+    backgroundColor: '#1e1e1e',
+    paddingBottom: Platform.OS === 'ios' ? 20 : 0,
   },
   inputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
     paddingVertical: 15,
-    backgroundColor: 'transparent',
   },
-  textInput: {
+  input: {
     flex: 1,
-    height: 40,
     backgroundColor: '#2e2e2e',
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
     color: '#ffffff',
-    borderRadius: 20,
-    paddingHorizontal: 15,
     marginRight: 10,
-  },
-  addButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  addButtonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    fontWeight: 'bold',
   },
   sendButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 20,
-    width: 40,
-    height: 40,
-    alignItems: 'center',
+    backgroundColor: '#4ECDC4',
+    borderRadius: 25,
+    paddingHorizontal: 20,
     justifyContent: 'center',
   },
   sendButtonText: {
     color: '#ffffff',
-    fontSize: 18,
     fontWeight: 'bold',
+  },
+  recommendationsContainer: {
+    flex: 1,
+  },
+  recommendationTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: 20,
+  },
+  foodGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  foodCard: {
+    width: '48%',
+    marginBottom: 15,
+    borderRadius: 15,
+    overflow: 'hidden',
+  },
+  foodCardGradient: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 100,
+  },
+  foodName: {
+    color: '#000000',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  selectText: {
+    color: '#000000',
+    fontSize: 14,
+    opacity: 0.7,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#ffffff',
   },
 });
