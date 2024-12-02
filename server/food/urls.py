@@ -16,6 +16,7 @@ urlpatterns = [
     path('food_ingredient', foodIngredient, name='foodIngredient'),
     path('check_vegan', checkVegan, name='checkVegan'),
     path('food_text', foodText, name='foodText'),
+    path('food_info', foodInfo, name='foodInfo'),
     path('fridge_image', fridgeImage, name='fridgeImage'),
     path('select_food', selectFood, name='selectFood'),
     ###path('login', login, name = 'login'),

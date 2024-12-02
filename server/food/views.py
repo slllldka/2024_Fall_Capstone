@@ -201,11 +201,34 @@ def foodText(request):
     keywords = [word for word in keywords if word not in non_food_keywords]
     matching_keywords = [keyword for keyword in keyword_list if keyword in text]
     final_keywords = list(set(keywords + matching_keywords))
-    print(final_keywords)
+    
     sentiment_results = aspect_based_sentiment_analysis(text, final_keywords)
-    print(sentiment_results)
-    #ai returns foods
-    food_list = []
+    
+    positive_word = [food for food, sentiment in sentiment_results.items() if sentiment == 'positive']
+    negative_word = [food for food, sentiment in sentiment_results.items() if sentiment == 'negative']
+    
+    print(positive_word, 'positive')
+    print(negative_word, 'negative')
+    
+    file_path = os.path.join(os.path.dirname(__file__), 'updated_food_data.csv')
+    updated_food_data_df = pd.read_csv(file_path)
+    
+    allergy_list = []
+    allergy_id_set = UserAllergy.objects.filter(user_id = user.id).values('allergy_id')
+    for allergy in allergy_id_set:
+        allergy_name = Allergy.objects.filter(id=allergy['allergy_id']).values('name').get()
+        allergy_list.append(allergy_name['name'])
+    
+    updated_food_data_df['positive_food_count'] = updated_food_data_df['keywords'].apply(
+        lambda keywords: -2 if any(keyword.strip() in allergy_list for keyword in keywords.split(','))
+        else -1 if any(keyword.strip() in negative_word for keyword in keywords.split(','))
+        else sum(1 for keyword in keywords.split(',') if keyword.strip() in positive_word)
+    )
+
+    sorted_df = updated_food_data_df.sort_values(by='positive_food_count', ascending=False)
+    food_list = sorted_df['english_name'].head(10).tolist()
+    print(food_list)
+
     return_list = []
     for food in food_list:
         if calorie_bound > 0:
@@ -223,7 +246,40 @@ def foodText(request):
         if len(return_list) == 5:
             break
     
-    return Response({'text':text, 'foods':['list', 'of', 'foods']})
+    return Response({'foods':food_list})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def foodInfo(request):
+    food_name = request.query_params.get('food')
+    try:
+        food = Food.objects.get(name=food_name)
+    except Food.DoesNotExist:
+        return Response({'error':'food is wrong'}, status = status.HTTP_400_BAD_REQUEST)
+    
+    #cuisine
+    cuisine=food.cuisine
+    
+    #ingredient
+    ingredient_list=[]
+    for ingredient_in_food in IngredientInFood.objects.filter(food_id=food.id).values('ingredient_id'):
+        ingredient = Ingredient.objects.get(id=ingredient_in_food['ingredient_id'])
+        ingredient_list.append(ingredient.name)
+    
+    #description
+    description=food.description
+    
+    #vegan
+    vegan=food.vegan
+    
+    #allergy
+    allergy_list=[]
+    for allergy_in_food in FoodAllergy.objects.filter(food_id=food.id).values('allergy_id'):
+        allergy = Allergy.objects.get(id=allergy_in_food['allergy_id'])
+        allergy_list.append(allergy.name)
+        
+    return Response({'cuisine':cuisine, 'ingredients':ingredient_list, 'description':description
+                     , 'vegan':vegan, 'allergies':allergy_list})
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
