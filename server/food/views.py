@@ -207,7 +207,10 @@ def foodText(request):
     positive_word = [food for food, sentiment in sentiment_results.items() if sentiment == 'positive']
     negative_word = [food for food, sentiment in sentiment_results.items() if sentiment == 'negative']
     
-    file_path = os.path.join(os.path.dirname(__file__), "updated_food_data.csv")
+    print(positive_word, 'positive')
+    print(negative_word, 'negative')
+    
+    file_path = os.path.join(os.path.dirname(__file__), 'updated_food_data.csv')
     updated_food_data_df = pd.read_csv(file_path)
     
     allergy_list = []
@@ -242,8 +245,41 @@ def foodText(request):
             
         if len(return_list) == 5:
             break
-    print(return_list)
-    return Response({'foods':return_list})
+    
+    return Response({'foods':food_list})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def foodInfo(request):
+    food_name = request.query_params.get('food')
+    try:
+        food = Food.objects.get(name=food_name)
+    except Food.DoesNotExist:
+        return Response({'error':'food is wrong'}, status = status.HTTP_400_BAD_REQUEST)
+    
+    #cuisine
+    cuisine=food.cuisine
+    
+    #ingredient
+    ingredient_list=[]
+    for ingredient_in_food in IngredientInFood.objects.filter(food_id=food.id).values('ingredient_id'):
+        ingredient = Ingredient.objects.get(id=ingredient_in_food['ingredient_id'])
+        ingredient_list.append(ingredient.name)
+    
+    #description
+    description=food.description
+    
+    #vegan
+    vegan=food.vegan
+    
+    #allergy
+    allergy_list=[]
+    for allergy_in_food in FoodAllergy.objects.filter(food_id=food.id).values('allergy_id'):
+        allergy = Allergy.objects.get(id=allergy_in_food['allergy_id'])
+        allergy_list.append(allergy.name)
+        
+    return Response({'cuisine':cuisine, 'ingredients':ingredient_list, 'description':description
+                     , 'vegan':vegan, 'allergies':allergy_list})
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
