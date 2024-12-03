@@ -2,17 +2,20 @@ from django.db import models
 from django.utils import timezone
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
-
+import os, csv, ast
 
 from account.models import *
 
 # Create your models here.
 
 class Exercise(models.Model):
-  name = models.CharField(max_length=30, unique=True)
+  name = models.CharField(max_length=50, unique=True)
   muscle_part = models.CharField(max_length=30)
-  calorie = models.IntegerField()
-  setnum = models.IntegerField()
+  sub_part = models.CharField(max_length=30, default="")
+  calorie_male = models.IntegerField(default=0)
+  calorie_female = models.IntegerField(default=0)
+  setnum = models.IntegerField(default=5)
+  default = models.BooleanField(default=False)
 
 class ExerciseMainPlan(models.Model):
   type = models.IntegerField()
@@ -94,3 +97,20 @@ class UserExerciseDone(models.Model):
     constraints = [
       models.UniqueConstraint(fields=['user_id', 'date_time'], name = 'unique_user_id_date_time_exercise')
     ]
+    
+@receiver(post_migrate)
+def add_default_exercises(sender, **kwargs):
+  if Exercise.objects.count() == 42:
+    return
+  else:
+    Exercise.objects.all().delete()
+  
+  file_path = os.path.join(os.path.dirname(__file__), 'exercise.csv')
+  with open(file_path, mode='r', encoding='utf-8-sig') as file:
+    reader = csv.DictReader(file)
+    for row in reader:
+      print(row['name'])
+      Exercise.objects.create(name=row['name'], muscle_part=row['muscle_part']
+                              , sub_part=row['sub_part'], calorie_male=row['calorie_male']
+                              , calorie_female=row['calorie_female'], setnum=row['setnum']
+                              , default=row['default'])

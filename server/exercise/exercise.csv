@@ -1,0 +1,43 @@
+﻿name,muscle_part,sub_part,calorie_male,calorie_female,setnum,default
+Incline Bench Press,chest,upper chest,30,24,5,1
+Incline Dumbbbel Bench Press,chest,upper chest,30,24,5,0
+Bench Press,chest,middle chest,30,24,5,1
+Machine Bench Press,chest,middle chest,30,24,5,1
+Dumbbell Bench Press,chest,middle chest,30,24,5,0
+Pec Dec Fly,chest,middle chest,25,20,5,0
+Dumbbell Fly,chest,middle chest,25,20,5,0
+Dips,chest,lower chest,30,24,5,1
+Decline Bench Press,chest,lower chest,30,24,5,0
+Pull Up,back,back,30,24,5,1
+Lat Pulldown,back,back,30,24,5,1
+Deadlift,back,back,35,28,5,1
+Barbell Row,back,back,30,24,5,1
+One Arm Dumbbell Row,back,back,25,20,5,0
+Seated Row,back,back,30,24,5,0
+Arm Pulldown,back,back,25,20,5,0
+Squat,legs,front thigh,35,28,5,1
+Leg Press,legs,front thigh,30,24,5,1
+Leg Extension,legs,front thigh,25,20,5,0
+V Squat,legs,front thigh,35,28,5,0
+Hip Thrust,legs,back thigh,30,24,5,1
+Leg Curl,legs,back thigh,25,20,5,1
+Lunge,legs,back thigh,30,24,5,0
+Hip Adduction,legs,back thigh,25,20,5,0
+Barbell Curl,arms,biceps,25,20,5,1
+Dumbbell Curl,arms,biceps,25,20,5,0
+Chin Up,arms,biceps,30,24,5,0
+Cable Triceps Pushdown,arms,triceps,25,20,5,1
+Barbell Triceps Extension,arms,triceps,25,20,5,0
+One Arm Dumbbell Kick Back,arms,triceps,20,16,5,0
+Dumbbell Triceps Extension,arms,triceps,25,20,5,0
+Dumbbell Lateral Raise,shoulders,lateral deltoid,25,20,5,1
+Face Pull,shoulders,lateral deltoid,25,20,5,0
+Overhead Press,shoulders,anterior deltoid,30,24,5,1
+Dumbbell Shoulder Press,shoulders,anterior deltoid,30,24,5,0
+Bentover Lateral Raise,shoulders,posterior deltoid,25,20,5,1
+Crunch,abs,abs,20,16,5,1
+Hanging Leg Raise,abs,abs,25,20,5,1
+Plank,abs,abs,20,16,5,1
+Leg Raise,abs,abs,25,20,5,0
+Cable Crunch,abs,abs,25,20,5,0
+Captain's Chair Leg Raise,abs,abs,25,20,5,0

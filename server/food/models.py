@@ -112,8 +112,6 @@ def add_default_foods(sender, **kwargs):
       english_name = row['english_name']
       Characteristic = set(c.strip() for c in row['Characteristic'].split(','))
       cuisine = row['cuisine']
-      print(english_name)
-      print(cuisine)
       category = set(c.strip() for c in row['category'].split(','))
       English_ingredient = set(i.strip() for i in row['English_ingredient'].split(','))
       description = row['description']
@@ -149,3 +147,5 @@ def add_default_foods(sender, **kwargs):
       #keywords
       for k in keywords:
         FoodKeyword.objects.create(food_id=food, keyword=k)
+      
+      print(english_name)
