@@ -14,6 +14,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
 from django.utils import timezone
+from datetime import date, timedelta
 
 from django.db import IntegrityError
 from django.db.models import Sum
@@ -32,6 +33,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 #from .models import User
 from .models import *
+from exercise.models import *
 
 import os
 
@@ -349,16 +351,34 @@ def calculate_calorie_bound(user):
     calorieCount = FiveDayCalorie.objects.filter(user_id=user.id).count()
     weightCount = UserWeight.objects.filter(user_id=user.id).count()
     if  calorieCount >= 2 and (calorieCount + 1 == weightCount):
-        fiveDayCalorieSet = FiveDayCalorie.objects.filter(user_id=user.id).order_by('-date').values('calorie')
+        fiveDayCalorieSet = FiveDayCalorie.objects.filter(user_id=user.id).order_by('-date')
         weightSet = UserWeight.objects.filter(user_id=user.id).order_by('-date').values('weight')
         calorieList = []
         for i in range(0, calorieCount - 1):
-            calorie1 = fiveDayCalorieSet[i]['calorie']
-            calorie2 = fiveDayCalorieSet[i+1]['calorie']
+            calorie1 = fiveDayCalorieSet[i].calorie
+            calorie2 = fiveDayCalorieSet[i+1].calorie
+            exercises1 = UserExerciseDone.objects.filter(
+                date__gte=fiveDayCalorieSet[i].date - timedelta(days=4), date__lte=fiveDayCalorieSet[i].date)
+            exerciseCalorie1 = 0
+            for exercise in exercises1:
+                if user.gender == 'male':
+                    exerciseCalorie1 += exercise.exercise_id.calorie_male
+                elif user.gender == 'female':
+                    exerciseCalorie1 += exercise.exercise_id.calorie_female
+            exercises2 = UserExerciseDone.objects.filter(
+                date__gte=fiveDayCalorieSet[i+1].date - timedelta(days=4), date__lte=fiveDayCalorieSet[i+1].date)
+            exerciseCalorie2 = 0
+            for exercise in exercises2:
+                if user.gender == 'male':
+                    exerciseCalorie2 += exercise.exercise_id.calorie_male
+                elif user.gender == 'female':
+                    exerciseCalorie2 += exercise.exercise_id.calorie_female
+            deltaCalorie = (calorie2-exerciseCalorie2) - (calorie1-exerciseCalorie1)
+            
             deltaWeight1 = weightSet[i]['weight'] - weightSet[i+1]['weight']
             deltaWeight2 = weightSet[i+1]['weight'] - weightSet[i+2]['weight']
-            deltaCalorie = calorie2 - calorie1
             deltaDeltaWeight = deltaWeight2 - deltaWeight1
+            
             if deltaCalorie * deltaDeltaWeight > 0:
                 ans = calorie1 - (deltaCalorie/deltaDeltaWeight) * deltaWeight1
                 calorieList.append(ans)
