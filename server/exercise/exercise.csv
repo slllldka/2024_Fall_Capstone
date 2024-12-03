@@ -1,6 +1,6 @@
 ﻿name,muscle_part,sub_part,calorie_male,calorie_female,setnum,default
 Incline Bench Press,chest,upper chest,30,24,5,1
-Incline Dumbbbel Bench Press,chest,upper chest,30,24,5,0
+Incline Dumbbell Bench Press,chest,upper chest,30,24,5,0
 Bench Press,chest,middle chest,30,24,5,1
 Machine Bench Press,chest,middle chest,30,24,5,1
 Dumbbell Bench Press,chest,middle chest,30,24,5,0

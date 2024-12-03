@@ -77,25 +77,125 @@ def add_default_add_plan(sender, **kwargs):
     ExerciseAddPlan.objects.create(type=1, day=2, muscle_part='arms')
     ExerciseAddPlan.objects.create(type=1, day=3, muscle_part='abs')
 
-class UserDefaultExercise(models.Model):
+class UserDefaultUpperChestExercise(models.Model):
   user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
-  muscle_part = models.CharField(max_length=30)
-  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE, default=1)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
   
   class Meta:
     constraints = [
-      models.UniqueConstraint(fields=['user_id', 'muscle_part'], name = 'unique_user_id_muscle_part_exercise')
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_upperchest')
     ]
+
+class UserDefaultMiddleChestExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_middlechest')
+    ]
+
+class UserDefaultLowerChestExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_lowerchest')
+    ]
+
+class UserDefaultBackExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_back')
+    ]
+
+class UserDefaultFrontThighExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_frontthigh')
+    ]
+
+class UserDefaultBackThighExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_backthigh')
+    ]
+
+class UserDefaultBicepsExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_biceps')
+    ]
+
+class UserDefaultTricepsExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_triceps')
+    ]
+
+class UserDefaultLateralDeltoidExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_lateraldeltoid')
+    ]
+
+class UserDefaultAnteriorDeltoidExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_anteriordeltoid')
+    ]
+
+class UserDefaultPosteriorDeltoidExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_posteriordeltoid')
+    ]
+
+
+class UserDefaultAbsExercise(models.Model):
+  user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
+  exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE)
+  
+  class Meta:
+    constraints = [
+      models.UniqueConstraint(fields=['user_id', 'exercise_id'], name = 'unique_user_id_exercise_id_abs')
+    ]
+
 
 class UserExerciseDone(models.Model):
   user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
-  date_time = models.DateTimeField(default=timezone.now)
+  date = models.DateField(default=timezone.now)
   exercise_id = models.ForeignKey(Exercise, to_field = 'id', on_delete=models.CASCADE, default=1)
   duration = models.IntegerField(default=60)
   
   class Meta:
     constraints = [
-      models.UniqueConstraint(fields=['user_id', 'date_time'], name = 'unique_user_id_date_time_exercise')
+      models.UniqueConstraint(fields=['user_id', 'date', 'exercise_id'], name = 'unique_user_id_date_exercise_id_exercise_done')
     ]
     
 @receiver(post_migrate)
