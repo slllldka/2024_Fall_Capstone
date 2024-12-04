@@ -10,6 +10,7 @@ import {BlurView} from '@react-native-community/blur';
 import BodyInfoRegistration from '../components/BodyInfoRegistration';
 import api from '../api/axiosConfig';
 import WeightRegistration from '../components/WeightRegistration';
+import FoodInput from '../components/FoodInput';
 
 type RootStackParamList = {
   Main: undefined;
@@ -43,6 +44,7 @@ export default function Main(): React.ReactElement {
   const fetchUserInfo = useUserStore(state => state.fetchUserInfo);
   const [showBodyInfoModal, setShowBodyInfoModal] = useState(false);
   const [showWeightModal, setShowWeightModal] = useState(false);
+  const [foodModalVisible, setFoodModalVisible] = useState(false);
 
   const handleAllergyClose = () => {
     console.log('Allergy modal closed');
@@ -99,36 +101,36 @@ export default function Main(): React.ReactElement {
       }
     };
     checkWeight();
-  }, [navigation]);
+  }, []);
 
   const menuItems = [
     {
       title: 'Food Tracking',
       subtitle: 'Record your meals',
       icon: 'food-apple',
-      route: 'FoodInput',
-      gradient: ['#FF6B6B', '#FF8E8E'],
+      onPress: () => setFoodModalVisible(true),
+      gradient: ['#00B4DB', '#0083B0'],
     },
     {
       title: 'Meal Plan',
       subtitle: 'Get recommendations',
       icon: 'silverware-fork-knife',
-      route: 'ChatRoom',
-      gradient: ['#4ECDC4', '#45B7AF'],
+      onPress: () => navigation.navigate('ChatRoom'),
+      gradient: ['#4ECDC4', '#821776'],
     },
     {
       title: 'Workout',
       subtitle: 'Exercise guide',
       icon: 'dumbbell',
-      route: 'WorkoutRecommend',
-      gradient: ['#6C5CE7', '#8067E7'],
+      onPress: () => navigation.navigate('WorkoutRecommend'),
+      gradient: ['#6C5CE7', '#821776'],
     },
     {
       title: 'Progress',
       subtitle: 'View your stats',
       icon: 'chart-line',
-      route: 'ChartPage',
-      gradient: ['#F9C74F', '#F3B233'],
+      onPress: () => navigation.navigate('ChartPage'),
+      gradient: ['#F9C74F', '#884732'],
     },
   ];
 
@@ -144,7 +146,7 @@ export default function Main(): React.ReactElement {
             style={styles.icon}
           />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>FLEX Coach</Text>
+        {/* <Text style={styles.headerTitle}>FLEX</Text> */}
         <TouchableOpacity
           onPress={() => navigation.navigate('Profile')}
           style={styles.headerButton}
@@ -162,7 +164,7 @@ export default function Main(): React.ReactElement {
         {menuItems.map((item, index) => (
           <TouchableOpacity
             key={index}
-            onPress={() => navigation.navigate(item.route)}
+            onPress={item.onPress}
             style={styles.menuItem}
           >
             <BlurView
@@ -195,6 +197,7 @@ export default function Main(): React.ReactElement {
         onClose={() => setShowBodyInfoModal(false)}
       />
       <WeightRegistration visible={showWeightModal} onClose={() => setShowWeightModal(false)} />
+      <FoodInput visible={foodModalVisible} onClose={() => setFoodModalVisible(false)} />
     </SafeAreaView>
   );
 }
