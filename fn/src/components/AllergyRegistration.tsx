@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {View, Text, StyleSheet, TextInput, TouchableOpacity, Modal} from 'react-native';
 import api from '../api/axiosConfig';
 import {useUserStore} from '../store/userStore';
+import {BlurView} from '@react-native-community/blur';
 
 export default function AllergyRegistration({
   visible,
@@ -44,66 +45,83 @@ export default function AllergyRegistration({
   };
 
   return (
-    <Modal visible={visible} transparent animationType='slide'>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalContent}>
-          <Text style={styles.title}>알러지 등록</Text>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder='알러지 항목을 입력하세요'
-              placeholderTextColor='#888'
-              value={currentAllergy}
-              onChangeText={setCurrentAllergy}
-              onSubmitEditing={addAllergy}
-            />
-            <TouchableOpacity style={styles.addButton} onPress={addAllergy}>
-              <Text style={styles.buttonText}>추가</Text>
-            </TouchableOpacity>
-          </View>
+    <Modal visible={visible} transparent animationType='fade'>
+      <BlurView
+        style={styles.modalOverlay}
+        blurType='dark'
+        blurAmount={40}
+        reducedTransparencyFallbackColor='transparent'
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.title}>알러지 등록</Text>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder='알러지 항목을 입력하세요'
+                placeholderTextColor='#888'
+                value={currentAllergy}
+                onChangeText={setCurrentAllergy}
+                onSubmitEditing={addAllergy}
+              />
+              <TouchableOpacity style={styles.addButton} onPress={addAllergy}>
+                <Text style={styles.buttonText}>추가</Text>
+              </TouchableOpacity>
+            </View>
 
-          <View style={styles.allergyList}>
-            {allergyList.map((allergy, index) => (
-              <View key={index} style={styles.allergyItem}>
-                <Text style={styles.allergyText}>{allergy}</Text>
-                <TouchableOpacity onPress={() => removeAllergy(index)}>
-                  <Text style={styles.removeButton}>X</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
+            <View style={styles.allergyList}>
+              {allergyList.map((allergy, index) => (
+                <View key={index} style={styles.allergyItem}>
+                  <Text style={styles.allergyText}>{allergy}</Text>
+                  <TouchableOpacity onPress={() => removeAllergy(index)}>
+                    <Text style={styles.removeButton}>X</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, allergyList.length === 0 && styles.disabledButton]}
-              onPress={handleSubmit}
-              disabled={allergyList.length === 0}
-            >
-              <Text style={styles.buttonText}>등록</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
-              <Text style={styles.buttonText}>취소</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.button, allergyList.length === 0 && styles.disabledButton]}
+                onPress={handleSubmit}
+                disabled={allergyList.length === 0}
+              >
+                <Text style={styles.buttonText}>등록</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
+                <Text style={styles.buttonText}>취소</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
+      </BlurView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  modalContainer: {
+  modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  modalContainer: {
+    width: '90%',
+    backgroundColor: '#262626',
+    borderRadius: 20,
+    padding: 20,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   modalContent: {
-    backgroundColor: '#333',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-    maxHeight: '80%',
+    width: '100%',
   },
   title: {
     color: '#fff',
