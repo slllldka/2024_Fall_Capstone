@@ -160,7 +160,8 @@ export default function ChatRoom(): React.ReactElement {
           }
         }
       } catch (error: any) {
-        console.error('API 요청 실패:', error);
+        console.error('API 요청 실패:', JSON.stringify(error, null, 2));
+
         setMessages([
           {
             id: '1',
