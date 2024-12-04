@@ -1,5 +1,14 @@
 import React, {useState} from 'react';
-import {Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Animated} from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+  ScrollView,
+  Animated,
+} from 'react-native';
 import {BlurView} from '@react-native-community/blur';
 import api from '../api/axiosConfig';
 
@@ -64,12 +73,13 @@ export default function MuscleRegistration({visible, onClose}: MuscleRegistratio
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType='fade' onRequestClose={onClose}>
       <BlurView
         style={styles.centeredView}
-        blurType="dark"
+        blurType='dark'
         blurAmount={20}
-        reducedTransparencyFallbackColor="transparent">
+        reducedTransparencyFallbackColor='transparent'
+      >
         <Animated.View
           style={[
             styles.modalView,
@@ -84,7 +94,8 @@ export default function MuscleRegistration({visible, onClose}: MuscleRegistratio
               ],
               opacity: animation,
             },
-          ]}>
+          ]}
+        >
           <Text style={styles.modalTitle}>Register Muscle Information</Text>
           <ScrollView style={styles.scrollView}>
             {Object.entries(muscleData).map(([key, value]) => (
@@ -94,9 +105,9 @@ export default function MuscleRegistration({visible, onClose}: MuscleRegistratio
                   style={styles.input}
                   value={value}
                   onChangeText={text => setMuscleData(prev => ({...prev, [key]: text}))}
-                  placeholder="Enter mass"
-                  keyboardType="decimal-pad"
-                  placeholderTextColor="#666"
+                  placeholder='Enter mass'
+                  keyboardType='decimal-pad'
+                  placeholderTextColor='#666'
                 />
               </View>
             ))}
@@ -140,7 +151,7 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     width: '100%',
-    maxHeight: '70%',
+    maxHeight: '80%',
   },
   modalTitle: {
     fontSize: 20,

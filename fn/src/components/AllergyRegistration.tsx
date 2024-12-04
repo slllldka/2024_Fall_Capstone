@@ -33,7 +33,7 @@ export default function AllergyRegistration({
       updateAllergyStatus(true);
       onClose();
     } catch (error) {
-      console.error('알러지 등록 실패:', error);
+      console.error('Failed to submit allergies:', error);
     }
   };
 
@@ -54,11 +54,11 @@ export default function AllergyRegistration({
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.title}>알러지 등록</Text>
+            <Text style={styles.title}>Allergy Registration</Text>
             <View style={styles.inputContainer}>
               <TextInput
                 style={styles.input}
-                placeholder='알러지 항목을 입력하세요'
+                placeholder='Enter allergy item'
                 placeholderTextColor='#888'
                 value={currentAllergy}
                 onChangeText={setCurrentAllergy}
