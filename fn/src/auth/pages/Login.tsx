@@ -90,7 +90,7 @@ export default function Login(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#262626',
+    backgroundColor: '#1A1A1A',
   },
   body: {
     flex: 90,

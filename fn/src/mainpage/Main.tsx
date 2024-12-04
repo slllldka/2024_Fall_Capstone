@@ -109,28 +109,28 @@ export default function Main(): React.ReactElement {
       subtitle: 'Record your meals',
       icon: 'food-apple',
       onPress: () => setFoodModalVisible(true),
-      gradient: ['#00B4DB', '#0083B0'],
+      gradient: ['#f213d2', '#023de2'],
     },
     {
       title: 'Meal Plan',
       subtitle: 'Get recommendations',
       icon: 'silverware-fork-knife',
       onPress: () => navigation.navigate('ChatRoom'),
-      gradient: ['#4ECDC4', '#821776'],
+      gradient: ['#23123e', '#b11756'],
     },
     {
       title: 'Workout',
       subtitle: 'Exercise guide',
       icon: 'dumbbell',
       onPress: () => navigation.navigate('WorkoutRecommend'),
-      gradient: ['#6C5CE7', '#821776'],
+      gradient: ['#4ECDC4', '#21113e'],
     },
     {
       title: 'Progress',
       subtitle: 'View your stats',
       icon: 'chart-line',
       onPress: () => navigation.navigate('ChartPage'),
-      gradient: ['#F9C74F', '#884732'],
+      gradient: ['#ff7171', '#128d8e'],
     },
   ];
 
@@ -162,11 +162,7 @@ export default function Main(): React.ReactElement {
 
       <View style={styles.container}>
         {menuItems.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={item.onPress}
-            style={styles.menuItem}
-          >
+          <TouchableOpacity key={index} onPress={item.onPress} style={styles.menuItem}>
             <BlurView
               style={styles.blurContainer}
               blurType='dark'

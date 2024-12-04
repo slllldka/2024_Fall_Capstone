@@ -164,7 +164,7 @@ export default function Profile(): React.JSX.Element {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#262626',
+    backgroundColor: '#1A1A1A',
   },
   header: {
     flexDirection: 'row',
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   infoSection: {
-    backgroundColor: '#333',
+    backgroundColor: '#282828',
     borderRadius: 10,
     padding: 16,
     marginBottom: 20,
