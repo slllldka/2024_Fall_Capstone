@@ -65,7 +65,7 @@ export default function AllergyRegistration({
                 onSubmitEditing={addAllergy}
               />
               <TouchableOpacity style={styles.addButton} onPress={addAllergy}>
-                <Text style={styles.buttonText}>추가</Text>
+                <Text style={styles.buttonText}>ADD</Text>
               </TouchableOpacity>
             </View>
 
@@ -86,10 +86,10 @@ export default function AllergyRegistration({
                 onPress={handleSubmit}
                 disabled={allergyList.length === 0}
               >
-                <Text style={styles.buttonText}>등록</Text>
+                <Text style={styles.buttonText}>SUBMIT</Text>
               </TouchableOpacity>
               <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
-                <Text style={styles.buttonText}>취소</Text>
+                <Text style={styles.buttonText}>CANCEL</Text>
               </TouchableOpacity>
             </View>
           </View>
