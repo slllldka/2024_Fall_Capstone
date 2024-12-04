@@ -48,7 +48,7 @@ export default function Login(): React.JSX.Element {
   const handleSubmit = async () => {
     try {
       const response = await api.post('/account/login', form);
-      
+
       if (response.status === 200) {
         const {access, refresh} = response.data;
         await JWTManager.setTokens({access, refresh});
