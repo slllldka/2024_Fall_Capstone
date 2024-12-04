@@ -103,10 +103,13 @@ export default function ChatRoom(): React.ReactElement {
         params: {food: selectedFood},
       });
 
-      setSelectedFoodInfo(infoResponse.data);
-      setShowFoodModal(true);
+      if (infoResponse && infoResponse.data) {
+        setSelectedFoodInfo(infoResponse.data);
+        setShowFoodModal(true);
+      }
     } catch (error) {
       console.error('음식 정보 가져오기 실패:', error);
+      alert('음식 정보를 가져오는데 실패했습니다.');
     }
   };
 
@@ -118,7 +121,7 @@ export default function ChatRoom(): React.ReactElement {
         food: selectedFoodName,
       });
 
-      if (response.status === 201) {
+      if (response && response.status === 201) {
         setShowFoodModal(false);
         setMessages(prevMessages => [
           ...prevMessages,
@@ -131,6 +134,7 @@ export default function ChatRoom(): React.ReactElement {
       }
     } catch (error) {
       console.error('음식 선택 실패:', error);
+      alert('음식 선택에 실패했습니다.');
     }
   };
 
@@ -142,22 +146,32 @@ export default function ChatRoom(): React.ReactElement {
           text: inputText,
         });
 
-        if (response.data.foods && Array.isArray(response.data.foods)) {
-          setMessages([
-            {
-              id: '1',
-              text: response.data.foods.join(','),
-              sender: 'ai',
-              isRecommendation: true,
-            },
-          ]);
+        if (response && response.data) {
+          if (response.data.foods && Array.isArray(response.data.foods)) {
+            console.log(response.data.foods);
+            setMessages([
+              {
+                id: '1',
+                text: response.data.foods.join(','),
+                sender: 'ai',
+                isRecommendation: true,
+              },
+            ]);
+          }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('API 요청 실패:', error);
+        setMessages([
+          {
+            id: '1',
+            text: '죄송합니다. 요청을 처리하는 중에 오류가 발생했습니다.',
+            sender: 'ai',
+          },
+        ]);
       } finally {
         setLoading(false);
+        setInputText('');
       }
-      setInputText('');
     }
   };
 
@@ -235,7 +249,7 @@ export default function ChatRoom(): React.ReactElement {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name='arrow-left' size={24} color='#fff' />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>음식 추천</Text>
+        <Text style={styles.headerTitle}>Meal Planner</Text>
         <View style={{width: 24}} />
       </View>
 
@@ -247,7 +261,7 @@ export default function ChatRoom(): React.ReactElement {
               style={styles.searchInput}
               value={inputText}
               onChangeText={setInputText}
-              placeholder='어떤 음식을 찾으시나요?'
+              placeholder='What food are you looking for?'
               placeholderTextColor='#666'
               onSubmitEditing={handleSend}
             />
@@ -465,7 +479,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   confirmButton: {
-    backgroundColor: '#4ECDC4',
+    backgroundColor: '#4a90e2',
   },
   cancelButton: {
     backgroundColor: '#FF3B30',

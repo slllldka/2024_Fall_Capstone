@@ -29,14 +29,30 @@ export default function WorkoutRecommend(): React.ReactElement {
 
   // 오늘 날짜의 키 생성
   const getTodayKey = () => {
-    const today = new Date();
-    return `completed_exercises_${today.toISOString().split('T')[0]}`;
+    // 서버의 timezone 기준으로 날짜 생성
+    const now = new Date();
+    // UTC 시간으로 변환
+    const utcTime = new Date(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate(),
+      now.getUTCHours(),
+      now.getUTCMinutes(),
+      now.getUTCSeconds(),
+    );
+
+    // 한국 시간으로 변환 (UTC+9)
+    const koreanTime = new Date(utcTime.getTime() + 9 * 60 * 60 * 1000);
+    const dateString = koreanTime.toISOString().split('T')[0];
+
+    return `completed_exercises_${dateString}`;
   };
 
   // 완료된 운동 목록 불러오기
   const loadCompletedExercises = async () => {
     try {
       const todayKey = getTodayKey();
+      console.log('Loading exercises for date:', todayKey); // 디버깅용
       const savedExercises = await AsyncStorage.getItem(todayKey);
       if (savedExercises) {
         const completedExercises = JSON.parse(savedExercises);
@@ -44,7 +60,7 @@ export default function WorkoutRecommend(): React.ReactElement {
       }
       return {main: [], add: []};
     } catch (error) {
-      console.error('완료된 운동 불러오기 실패:', error);
+      console.error('Failed to load completed exercises:', error);
       return {main: [], add: []};
     }
   };
@@ -54,10 +70,18 @@ export default function WorkoutRecommend(): React.ReactElement {
     try {
       const todayKey = getTodayKey();
       const completedExercises = await loadCompletedExercises();
+
+      // 이미 완료된 운동인지 확인
+      if (completedExercises[type].includes(exerciseName)) {
+        console.log('Exercise already completed today');
+        return;
+      }
+
       completedExercises[type].push(exerciseName);
       await AsyncStorage.setItem(todayKey, JSON.stringify(completedExercises));
+      console.log(`Saved ${type} exercise: ${exerciseName} for date: ${todayKey}`);
     } catch (error) {
-      console.error('완료된 운동 저장 실패:', error);
+      console.error('Failed to save completed exercise:', error);
     }
   };
 

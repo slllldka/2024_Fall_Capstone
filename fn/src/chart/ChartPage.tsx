@@ -70,13 +70,13 @@ export default function ExerciseProgress(): React.ReactElement {
       }
     } catch (error: any) {
       if (error.response?.status === 404) {
-        setError('아직 기록된 데이터가 없습니다.');
+        setError('No recorded data yet.');
       } else if (error.response?.status === 401) {
-        setError('인증에 실패했습니다. 다시 로그인해주세요.');
+        setError('Authentication failed. Please log in again.');
       } else {
-        setError('데이터를 불러오는데 실패했습니다.');
+        setError('Failed to load data.');
       }
-      console.error('데이터 조회 실패:', error);
+      console.error('Data retrieval failed:', error);
     } finally {
       setIsLoading(false);
     }
@@ -94,7 +94,7 @@ export default function ExerciseProgress(): React.ReactElement {
         );
       }
     } catch (error) {
-      console.error('근육 이력 조회 실패:', error);
+      console.error('Muscle history retrieval failed:', error);
     }
   };
 
@@ -108,7 +108,7 @@ export default function ExerciseProgress(): React.ReactElement {
         <View style={styles.chartContainer}>
           <Text style={styles.chartTitle}>{title}</Text>
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>데이터가 없습니다</Text>
+            <Text style={styles.emptyText}>No data available</Text>
           </View>
         </View>
       );
@@ -136,18 +136,18 @@ export default function ExerciseProgress(): React.ReactElement {
     if (!latestMuscleData) {
       return (
         <View style={styles.chartContainer}>
-          <Text>if you want to see the muscle history, please press the chart</Text>
+          <Text>If you want to see the muscle history, please press the chart</Text>
           <Text style={styles.chartTitle}>Muscle Distribution</Text>
 
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>데이터가 없습니다</Text>
+            <Text style={styles.emptyText}>No data available</Text>
           </View>
         </View>
       );
     }
 
     const data = {
-      labels: ['왼팔', '오른팔', '몸통', '왼다리', '오른다리'],
+      labels: ['Left Arm', 'Right Arm', 'Body', 'Left Leg', 'Right Leg'],
       datasets: [
         {
           data: [
@@ -187,21 +187,21 @@ export default function ExerciseProgress(): React.ReactElement {
         </TouchableOpacity>
         <View style={styles.muscleCompareContainer}>
           <View style={styles.compareRow}>
-            <Text style={styles.compareTitle}>팔 근육 좌우 비교:</Text>
+            <Text style={styles.compareTitle}>Left Arm vs Right Arm:</Text>
             <Text style={styles.compareValue}>
               {Math.abs(
                 latestMuscleData.left_arm_muscle_mass - latestMuscleData.right_arm_muscle_mass,
               ).toFixed(2)}
-              kg 차이
+              kg difference
             </Text>
           </View>
           <View style={styles.compareRow}>
-            <Text style={styles.compareTitle}>다리 근육 좌우 비교:</Text>
+            <Text style={styles.compareTitle}>Left Leg vs Right Leg:</Text>
             <Text style={styles.compareValue}>
               {Math.abs(
                 latestMuscleData.left_leg_muscle_mass - latestMuscleData.right_leg_muscle_mass,
               ).toFixed(2)}
-              kg 차이
+              kg difference
             </Text>
           </View>
         </View>
@@ -214,11 +214,11 @@ export default function ExerciseProgress(): React.ReactElement {
 
     const dates = muscleHistory.map(data => data.date.split('T')[0]);
     const muscleTypes = [
-      {key: 'left_arm_muscle_mass', label: '왼팔', color: 'rgba(255, 99, 132, 1)'},
-      {key: 'right_arm_muscle_mass', label: '오른팔', color: 'rgba(54, 162, 235, 1)'},
-      {key: 'body_muscle_mass', label: '몸통', color: 'rgba(255, 206, 86, 1)'},
-      {key: 'left_leg_muscle_mass', label: '왼다리', color: 'rgba(75, 192, 192, 1)'},
-      {key: 'right_leg_muscle_mass', label: '오른다리', color: 'rgba(153, 102, 255, 1)'},
+      {key: 'left_arm_muscle_mass', label: 'Left Arm', color: 'rgba(255, 99, 132, 1)'},
+      {key: 'right_arm_muscle_mass', label: 'Right Arm', color: 'rgba(54, 162, 235, 1)'},
+      {key: 'body_muscle_mass', label: 'Body', color: 'rgba(255, 206, 86, 1)'},
+      {key: 'left_leg_muscle_mass', label: 'Left Leg', color: 'rgba(75, 192, 192, 1)'},
+      {key: 'right_leg_muscle_mass', label: 'Right Leg', color: 'rgba(153, 102, 255, 1)'},
     ];
 
     return (
@@ -230,11 +230,11 @@ export default function ExerciseProgress(): React.ReactElement {
       >
         <BlurView style={styles.modalContainer} blurType='dark' blurAmount={10}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>근육량 변화 추이</Text>
+            <Text style={styles.modalTitle}>Muscle Mass Change Trend</Text>
             <ScrollView>
               {muscleTypes.map(muscleType => (
                 <View key={muscleType.key} style={styles.chartWrapper}>
-                  <Text style={styles.muscleTypeTitle}>{muscleType.label} 근육량 변화</Text>
+                  <Text style={styles.muscleTypeTitle}>{muscleType.label} Muscle Mass Change</Text>
                   <LineChart
                     data={{
                       labels: dates,
@@ -266,7 +266,7 @@ export default function ExerciseProgress(): React.ReactElement {
               ))}
             </ScrollView>
             <TouchableOpacity style={styles.closeButton} onPress={() => setShowHistoryModal(false)}>
-              <Text style={styles.closeButtonText}>닫기</Text>
+              <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
         </BlurView>
@@ -287,7 +287,7 @@ export default function ExerciseProgress(): React.ReactElement {
       <View style={styles.centerContainer}>
         <Text style={styles.errorText}>{error}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={fetchData}>
-          <Text style={styles.retryButtonText}>다시 시도</Text>
+          <Text style={styles.retryButtonText}>Retry</Text>
         </TouchableOpacity>
       </View>
     );

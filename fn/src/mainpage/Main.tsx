@@ -112,7 +112,7 @@ export default function Main(): React.ReactElement {
       gradient: ['#f213d2', '#023de2'],
     },
     {
-      title: 'Meal Plan',
+      title: 'Meal Planner',
       subtitle: 'Get recommendations',
       icon: 'silverware-fork-knife',
       onPress: () => navigation.navigate('ChatRoom'),
