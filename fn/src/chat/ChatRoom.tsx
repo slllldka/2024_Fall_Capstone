@@ -1,24 +1,23 @@
 import React, {useState, useRef, useEffect} from 'react';
-
 import {
   View,
   Text,
   StyleSheet,
-  FlatList,
-  TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
+  TextInput,
   SafeAreaView,
-  Animated,
-  ActivityIndicator,
+  Dimensions,
   ScrollView,
+  ActivityIndicator,
+  Animated,
+  Modal,
 } from 'react-native';
-
 import {useNavigation} from '@react-navigation/native';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import LinearGradient from 'react-native-linear-gradient'; // Linear Gradient 사용
+import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import api from '../api/axiosConfig';
+
+const {width} = Dimensions.get('window');
 
 interface Message {
   id: string;
@@ -28,41 +27,41 @@ interface Message {
   isSelected?: boolean;
 }
 
+interface FoodInfo {
+  cuisine: string;
+  ingredients: string[];
+  description: string;
+  vegan: boolean;
+  allergies: string[];
+}
+
 const GRADIENT_COLORS = [
-  ['#4ECDC4', '#45B7AF'], // 민트
-  ['#FF9A9E', '#FAD0C4'], // 연한 핑크
-  ['#A18CD1', '#FBC2EB'], // 라벤더
-  ['#96E6A1', '#D4FC79'], // 연두
-  ['#FFD1FF', '#FAD0C4'], // 연한 보라
-  ['#FFC3A0', '#FFAFBD'], // 살몬
+  ['#521056', '#FF8E8E'], // 보라/핑크
+  ['#4ECDC4', '#821776'], // 민트/보라
+  ['#6C5CE7', '#821776'], // 보라/보라
+  ['#F9C74F', '#884732'], // 노랑/브라운
 ];
 
 export default function ChatRoom(): React.ReactElement {
   const navigation = useNavigation();
 
-  const [messages, setMessages] = useState<Message[]>([
-    // {id: '1', text: 'What kind of things you want to eat?', sender: 'ai'},
-    // {id: '3', text: 'I want protein for to night!', sender: 'user'},
-    // {id: '4', text: 'Click your meal  😊', sender: 'ai'},
-    // {id: '4', text: 'chicken breast', sender: 'ai'},
-    // {id: '4', text: 'beef steak', sender: 'ai'},
-    // {id: '4', text: 'Milk with cereals', sender: 'ai'},
-    // {id: '4', text: 'Grilled Mackerel', sender: 'ai'},
-    // {id: '4', text: 'I dont want all of them', sender: 'ai'},
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [selectedFoodInfo, setSelectedFoodInfo] = useState<FoodInfo | null>(null);
+  const [showFoodModal, setShowFoodModal] = useState(false);
+  const [selectedFoodName, setSelectedFoodName] = useState<string>('');
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0)).current;
+  const inputWidthAnim = useRef(new Animated.Value(width - 80)).current;
 
   useEffect(() => {
     if (inputText.trim() !== '') {
-      // Show the button with animation
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 300,
+          duration: 200,
           useNativeDriver: true,
         }),
         Animated.spring(scaleAnim, {
@@ -70,45 +69,65 @@ export default function ChatRoom(): React.ReactElement {
           friction: 5,
           useNativeDriver: true,
         }),
+        Animated.timing(inputWidthAnim, {
+          toValue: width - 130,
+          duration: 200,
+          useNativeDriver: false,
+        }),
       ]).start();
     } else {
-      // Hide the button with animation
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 0,
-          duration: 300,
+          duration: 200,
           useNativeDriver: true,
         }),
         Animated.timing(scaleAnim, {
           toValue: 0,
-          duration: 300,
+          duration: 200,
           useNativeDriver: true,
+        }),
+        Animated.timing(inputWidthAnim, {
+          toValue: width - 80,
+          duration: 200,
+          useNativeDriver: false,
         }),
       ]).start();
     }
-  }, [inputText, fadeAnim, scaleAnim]);
+  }, [inputText, fadeAnim, scaleAnim, inputWidthAnim]);
 
   const handleFoodSelection = async (selectedFood: string) => {
     try {
+      setSelectedFoodName(selectedFood);
+      const infoResponse = await api.get('/food/food_info', {
+        params: {food: selectedFood},
+      });
+
+      setSelectedFoodInfo(infoResponse.data);
+      setShowFoodModal(true);
+    } catch (error) {
+      console.error('음식 정보 가져오기 실패:', error);
+    }
+  };
+
+  const handleConfirmSelection = async () => {
+    if (!selectedFoodName) return;
+
+    try {
       const response = await api.post('/food/select_food', {
-        food: selectedFood,
+        food: selectedFoodName,
       });
 
       if (response.status === 201) {
-        // 선택된 음식 표시
-        setMessages(prevMessages =>
-          prevMessages.map(msg =>
-            msg.text === selectedFood && msg.isRecommendation ? {...msg, isSelected: true} : msg,
-          ),
-        );
-
-        // 선택 확인 메시지 추가
-        const confirmMessage: Message = {
-          id: `${messages.length + 1}`,
-          text: `${selectedFood}를 선택하셨습니다!`,
-          sender: 'ai',
-        };
-        setMessages(prevMessages => [...prevMessages, confirmMessage]);
+        setShowFoodModal(false);
+        setMessages(prevMessages => [
+          ...prevMessages,
+          {
+            id: String(prevMessages.length + 1),
+            text: `${selectedFoodName}를 선택하셨습니다!`,
+            sender: 'ai',
+          },
+        ]);
       }
     } catch (error) {
       console.error('음식 선택 실패:', error);
@@ -142,112 +161,128 @@ export default function ChatRoom(): React.ReactElement {
     }
   };
 
-  const handleCameraPress = () => {
-    launchCamera({mediaType: 'photo'}, response => {
-      if (!response.didCancel && !response.errorCode) {
-        console.log('Camera Image URI:', response.assets?.[0]?.uri);
-      }
-    });
-  };
-
-  const handleGalleryPress = () => {
-    launchImageLibrary({mediaType: 'photo'}, response => {
-      if (!response.didCancel && !response.errorCode) {
-        console.log('Gallery Image URI:', response.assets?.[0]?.uri);
-      }
-    });
-  };
-
-  const renderMessage = ({item}: {item: Message}) => (
-    <View
-      style={[
-        styles.messageContainer,
-        item.sender === 'user' ? styles.userMessage : styles.aiMessage,
-        item.isSelected && styles.selectedMessage,
-      ]}
-    >
-      {item.isRecommendation ? (
-        <TouchableOpacity onPress={() => handleFoodSelection(item.text)} disabled={item.isSelected}>
-          <Text
-            style={[
-              item.sender === 'user' ? styles.userText : styles.aiText,
-              item.isSelected && styles.selectedText,
-            ]}
-          >
-            {item.text}
-          </Text>
-        </TouchableOpacity>
-      ) : (
-        <Text style={item.sender === 'user' ? styles.userText : styles.aiText}>{item.text}</Text>
-      )}
-    </View>
+  const renderFoodCard = (food: string, index: number) => (
+    <TouchableOpacity key={index} onPress={() => handleFoodSelection(food)} style={styles.foodCard}>
+      <LinearGradient
+        colors={GRADIENT_COLORS[index % GRADIENT_COLORS.length]}
+        start={{x: 0, y: 0}}
+        end={{x: 1, y: 1}}
+        style={styles.gradientCard}
+      >
+        <View style={styles.foodContent}>
+          <Icon
+            name='food-variant'
+            size={28}
+            color='rgba(255,255,255,0.9)'
+            style={styles.foodIcon}
+          />
+          <Text style={styles.foodName}>{food}</Text>
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
   );
 
-  const renderFoodRecommendations = (foods: string[]) => (
-    <View style={styles.recommendationsContainer}>
-      <Text style={styles.recommendationTitle}>추천 메뉴</Text>
-      <View style={styles.foodGrid}>
-        {foods.map((food, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.foodCard}
-            onPress={() => handleFoodSelection(food)}
-          >
-            <LinearGradient
-              colors={GRADIENT_COLORS[index % GRADIENT_COLORS.length]}
-              style={styles.foodCardGradient}
+  const FoodInfoModal = () => (
+    <Modal visible={showFoodModal} transparent animationType='slide'>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.modalTitle}>{selectedFoodInfo?.cuisine}</Text>
+
+          <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
+            <Text style={styles.sectionTitle}>설명</Text>
+            <Text style={styles.description}>{selectedFoodInfo?.description}</Text>
+
+            <Text style={styles.sectionTitle}>재료</Text>
+            <View style={styles.ingredientsList}>
+              {selectedFoodInfo?.ingredients.map((ingredient, index) => (
+                <Text key={index} style={styles.ingredient}>
+                  • {ingredient}
+                </Text>
+              ))}
+            </View>
+
+            <View style={styles.infoTags}>
+              {selectedFoodInfo?.vegan && (
+                <View style={styles.tag}>
+                  <Text style={styles.tagText}>비건</Text>
+                </View>
+              )}
+            </View>
+          </ScrollView>
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[styles.button, styles.confirmButton]}
+              onPress={handleConfirmSelection}
             >
-              <Text style={styles.foodName}>{food}</Text>
-              <Text style={styles.selectText}>선택하기</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        ))}
+              <Text style={styles.buttonText}>선택하기</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.cancelButton]}
+              onPress={() => setShowFoodModal(false)}
+            >
+              <Text style={styles.buttonText}>취소</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
-    </View>
+    </Modal>
   );
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <LinearGradient colors={['#2e2e2e', '#1e1e1e']} style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.headerButton}>
-          <Text style={styles.headerButtonText}>뒤로</Text>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name='arrow-left' size={24} color='#fff' />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>음식 추천</Text>
-        <View style={styles.headerButton} />
-      </LinearGradient>
+        <View style={{width: 24}} />
+      </View>
 
-      <View style={styles.container}>
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size='large' color='#4ECDC4' />
-            <Text style={styles.loadingText}>Loading...</Text>
-          </View>
-        ) : (
-          <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-            {messages.length > 0 &&
-              messages[0].isRecommendation &&
-              renderFoodRecommendations(messages[0].text.split(','))}
-          </ScrollView>
-        )}
-
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.inputWrapper}
-        >
-          <View style={styles.inputContainer}>
+      <View style={styles.searchSection}>
+        <View style={styles.searchContainer}>
+          <Icon name='magnify' size={24} color='#666' style={styles.searchIcon} />
+          <Animated.View style={{width: inputWidthAnim}}>
             <TextInput
-              style={styles.input}
+              style={styles.searchInput}
               value={inputText}
               onChangeText={setInputText}
               placeholder='어떤 음식을 찾으시나요?'
-              placeholderTextColor='#888'
+              placeholderTextColor='#666'
+              onSubmitEditing={handleSend}
             />
-            <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-              <Text style={styles.sendButtonText}>검색</Text>
+          </Animated.View>
+          <Animated.View
+            style={{
+              opacity: fadeAnim,
+              transform: [{scale: scaleAnim}],
+              position: 'absolute',
+              right: 10,
+            }}
+          >
+            <TouchableOpacity onPress={handleSend} style={styles.searchButton}>
+              <LinearGradient colors={['#874da2', '#c43a30']} style={styles.gradientButton}>
+                <Icon name='send' size={20} color='#fff' />
+              </LinearGradient>
             </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
+          </Animated.View>
+        </View>
       </View>
+
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size='large' color='#fff' />
+        </View>
+      ) : (
+        <ScrollView style={styles.content}>
+          {messages.length > 0 && messages[0].isRecommendation && (
+            <View style={styles.recommendationsContainer}>
+              {messages[0].text.split(',').map((food, index) => renderFoodCard(food.trim(), index))}
+            </View>
+          )}
+        </ScrollView>
+      )}
+      <FoodInfoModal />
     </SafeAreaView>
   );
 }
@@ -255,103 +290,190 @@ export default function ChatRoom(): React.ReactElement {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#1e1e1e',
+    backgroundColor: '#1A1A1A',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
-    backgroundColor: '#2e2e2e',
+    padding: 20,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#fff',
   },
-  container: {
-    flex: 1,
-    backgroundColor: '#1e1e1e',
+  searchSection: {
+    padding: 20,
+    backgroundColor: '#1A1A1A',
   },
-  scrollContainer: {
-    flex: 1,
-    padding: 15,
-  },
-  inputWrapper: {
-    borderTopWidth: 1,
-    borderTopColor: '#333',
-    backgroundColor: '#1e1e1e',
-    paddingBottom: Platform.OS === 'ios' ? 20 : 0,
-  },
-  inputContainer: {
+  searchContainer: {
     flexDirection: 'row',
-    paddingVertical: 15,
+    alignItems: 'center',
+    backgroundColor: '#262626',
+    borderRadius: 15,
+    padding: 10,
+    position: 'relative',
   },
-  input: {
-    flex: 1,
-    backgroundColor: '#2e2e2e',
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    color: '#ffffff',
+  searchIcon: {
     marginRight: 10,
   },
-  sendButton: {
-    backgroundColor: '#4ECDC4',
-    borderRadius: 25,
-    paddingHorizontal: 20,
-    justifyContent: 'center',
+  searchInput: {
+    flex: 1,
+    color: '#fff',
+    fontSize: 16,
+    padding: 0,
   },
-  sendButtonText: {
-    color: '#ffffff',
-    fontWeight: 'bold',
+  searchButton: {
+    marginLeft: 10,
+  },
+  gradientButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  content: {
+    flex: 1,
+    padding: 10,
   },
   recommendationsContainer: {
-    flex: 1,
-  },
-  recommendationTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 20,
-  },
-  foodGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    padding: 10,
   },
   foodCard: {
-    width: '48%',
-    marginBottom: 15,
-    borderRadius: 15,
+    width: '96%',
+    height: 140,
+    marginBottom: 20,
+    borderRadius: 20,
     overflow: 'hidden',
   },
-  foodCardGradient: {
+  gradientCard: {
+    flex: 1,
     padding: 20,
-    alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 100,
+  },
+  foodContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  foodIcon: {
+    marginBottom: 12,
   },
   foodName: {
-    color: '#000000',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
+    color: '#FFFFFF',
     textAlign: 'center',
     marginBottom: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: {width: 1, height: 1},
+    textShadowRadius: 3,
   },
   selectText: {
-    color: '#000000',
     fontSize: 14,
-    opacity: 0.7,
+    color: 'rgba(255,255,255,0.9)',
+    textAlign: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 15,
+    overflow: 'hidden',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  loadingText: {
-    marginTop: 10,
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    paddingVertical: 20,
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: '#262626',
+    borderRadius: 20,
+    padding: 20,
+    maxHeight: '80%',
+  },
+  modalScroll: {
+    maxHeight: '70%',
+    marginBottom: 15,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginTop: 15,
+    marginBottom: 10,
+  },
+  description: {
+    color: '#fff',
     fontSize: 16,
-    color: '#ffffff',
+    lineHeight: 24,
+  },
+  ingredientsList: {
+    marginTop: 5,
+    marginBottom: 10,
+  },
+  ingredient: {
+    color: '#fff',
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  infoTags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 15,
+    marginBottom: 10,
+  },
+  tag: {
+    backgroundColor: '#4ECDC4',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  tagText: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20,
+  },
+  button: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    marginHorizontal: 5,
+  },
+  confirmButton: {
+    backgroundColor: '#4ECDC4',
+  },
+  cancelButton: {
+    backgroundColor: '#FF3B30',
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
