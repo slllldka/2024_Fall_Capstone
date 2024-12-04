@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import {Modal, View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import {Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, Animated} from 'react-native';
+import {BlurView} from '@react-native-community/blur';
 import api from '../api/axiosConfig';
 import {useUserStore} from '../store/userStore';
 
@@ -14,6 +15,25 @@ export default function BodyInfoRegistration({visible, onClose}: BodyInfoRegistr
     duration: '',
     goal: 0,
   });
+  const [animation] = useState(new Animated.Value(0));
+
+  React.useEffect(() => {
+    if (visible) {
+      Animated.spring(animation, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    } else {
+      Animated.spring(animation, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    }
+  }, [visible]);
 
   const updateBodyInfoStatus = useUserStore(state => state.updateBodyInfoStatus);
 
@@ -36,43 +56,58 @@ export default function BodyInfoRegistration({visible, onClose}: BodyInfoRegistr
   };
 
   return (
-    <Modal visible={visible} transparent animationType='slide'>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
+    <Modal visible={visible} transparent animationType="fade">
+      <BlurView
+        style={styles.centeredView}
+        blurType="dark"
+        blurAmount={20}
+        reducedTransparencyFallbackColor="transparent">
+        <Animated.View
+          style={[
+            styles.modalView,
+            {
+              transform: [
+                {
+                  scale: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1],
+                  }),
+                },
+              ],
+              opacity: animation,
+            },
+          ]}>
           <Text style={styles.modalTitle}>Register Body Information</Text>
           <TextInput
             style={styles.input}
             value={form.height}
             onChangeText={text => setForm(prev => ({...prev, height: text}))}
-            placeholder='Height (cm)'
-            keyboardType='numeric'
-            placeholderTextColor='#666'
+            placeholder="Height (cm)"
+            keyboardType="numeric"
+            placeholderTextColor="#666"
           />
           <TextInput
             style={styles.input}
             value={form.duration}
             onChangeText={text => setForm(prev => ({...prev, duration: text}))}
-            placeholder='Exercise Duration (minutes)'
-            keyboardType='numeric'
-            placeholderTextColor='#666'
+            placeholder="Exercise Duration (minutes)"
+            keyboardType="numeric"
+            placeholderTextColor="#666"
           />
           <View style={styles.goalContainer}>
             <TouchableOpacity
               style={[styles.goalButton, form.goal === -1 && styles.selectedGoal]}
-              onPress={() => setForm(prev => ({...prev, goal: -1}))}
-            >
+              onPress={() => setForm(prev => ({...prev, goal: -1}))}>
               <Text style={styles.goalText}>Diet</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.goalButton, form.goal === 0 && styles.selectedGoal]}
-              onPress={() => setForm(prev => ({...prev, goal: 0}))}
-            >
+              onPress={() => setForm(prev => ({...prev, goal: 0}))}>
               <Text style={styles.goalText}>Maintain</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.goalButton, form.goal === 1 && styles.selectedGoal]}
-              onPress={() => setForm(prev => ({...prev, goal: 1}))}
-            >
+              onPress={() => setForm(prev => ({...prev, goal: 1}))}>
               <Text style={styles.goalText}>Bulk Up</Text>
             </TouchableOpacity>
           </View>
@@ -84,8 +119,8 @@ export default function BodyInfoRegistration({visible, onClose}: BodyInfoRegistr
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </View>
+        </Animated.View>
+      </BlurView>
     </Modal>
   );
 }

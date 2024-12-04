@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import {Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView} from 'react-native';
+import {Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView, Animated} from 'react-native';
+import {BlurView} from '@react-native-community/blur';
 import api from '../api/axiosConfig';
 
 interface MuscleRegistrationProps {
@@ -15,6 +16,25 @@ export default function MuscleRegistration({visible, onClose}: MuscleRegistratio
     right_leg_muscle_mass: '',
     left_leg_muscle_mass: '',
   });
+  const [animation] = useState(new Animated.Value(0));
+
+  React.useEffect(() => {
+    if (visible) {
+      Animated.spring(animation, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    } else {
+      Animated.spring(animation, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    }
+  }, [visible]);
 
   const handleSubmit = async () => {
     try {
@@ -44,9 +64,27 @@ export default function MuscleRegistration({visible, onClose}: MuscleRegistratio
   };
 
   return (
-    <Modal visible={visible} transparent animationType='slide' onRequestClose={onClose}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <BlurView
+        style={styles.centeredView}
+        blurType="dark"
+        blurAmount={20}
+        reducedTransparencyFallbackColor="transparent">
+        <Animated.View
+          style={[
+            styles.modalView,
+            {
+              transform: [
+                {
+                  scale: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1],
+                  }),
+                },
+              ],
+              opacity: animation,
+            },
+          ]}>
           <Text style={styles.modalTitle}>Register Muscle Information</Text>
           <ScrollView style={styles.scrollView}>
             {Object.entries(muscleData).map(([key, value]) => (
@@ -56,9 +94,9 @@ export default function MuscleRegistration({visible, onClose}: MuscleRegistratio
                   style={styles.input}
                   value={value}
                   onChangeText={text => setMuscleData(prev => ({...prev, [key]: text}))}
-                  placeholder='Enter mass'
-                  keyboardType='decimal-pad'
-                  placeholderTextColor='#666'
+                  placeholder="Enter mass"
+                  keyboardType="decimal-pad"
+                  placeholderTextColor="#666"
                 />
               </View>
             ))}
@@ -71,8 +109,8 @@ export default function MuscleRegistration({visible, onClose}: MuscleRegistratio
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </View>
+        </Animated.View>
+      </BlurView>
     </Modal>
   );
 }

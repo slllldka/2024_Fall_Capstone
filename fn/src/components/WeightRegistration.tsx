@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
-import {Modal, View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
+import {Modal, View, Text, StyleSheet, TouchableOpacity, TextInput, Animated} from 'react-native';
+import {BlurView} from '@react-native-community/blur';
 import api from '../api/axiosConfig';
 
 interface WeightRegistrationProps {
@@ -9,6 +10,25 @@ interface WeightRegistrationProps {
 
 export default function WeightRegistration({visible, onClose}: WeightRegistrationProps) {
   const [weight, setWeight] = useState('');
+  const [animation] = useState(new Animated.Value(0));
+
+  React.useEffect(() => {
+    if (visible) {
+      Animated.spring(animation, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    } else {
+      Animated.spring(animation, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    }
+  }, [visible]);
 
   const handleSubmit = async () => {
     try {
@@ -26,17 +46,35 @@ export default function WeightRegistration({visible, onClose}: WeightRegistratio
   };
 
   return (
-    <Modal visible={visible} transparent animationType='slide' onRequestClose={onClose}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <BlurView
+        style={styles.centeredView}
+        blurType="dark"
+        blurAmount={20}
+        reducedTransparencyFallbackColor="transparent">
+        <Animated.View
+          style={[
+            styles.modalView,
+            {
+              transform: [
+                {
+                  scale: animation.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1],
+                  }),
+                },
+              ],
+              opacity: animation,
+            },
+          ]}>
           <Text style={styles.modalTitle}>Register Weight</Text>
           <TextInput
             style={styles.input}
             value={weight}
             onChangeText={setWeight}
-            placeholder='Enter weight (kg)'
-            keyboardType='decimal-pad'
-            placeholderTextColor='#666'
+            placeholder="Enter weight (kg)"
+            keyboardType="decimal-pad"
+            placeholderTextColor="#666"
           />
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
@@ -46,8 +84,8 @@ export default function WeightRegistration({visible, onClose}: WeightRegistratio
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
-        </View>
-      </View>
+        </Animated.View>
+      </BlurView>
     </Modal>
   );
 }
@@ -57,7 +95,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   modalView: {
     width: '80%',
