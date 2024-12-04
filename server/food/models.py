@@ -110,13 +110,13 @@ def add_default_foods(sender, **kwargs):
     
     for row in reader:
       english_name = row['english_name']
-      Characteristic = set(c.strip() for c in row['Characteristic'].split(','))
+      Characteristic = set(ast.literal_eval(row['Characteristic']))
       cuisine = row['cuisine']
-      category = set(c.strip() for c in row['category'].split(','))
-      English_ingredient = set(i.strip() for i in row['English_ingredient'].split(','))
+      category = set(ast.literal_eval(row['category']))
+      English_ingredient = set(ast.literal_eval(row['English_ingredient']))
       description = row['description']
       vegetarians = row[' vegetarians']
-      allergy = set(a.strip() for a in row['allergy'].split(','))
+      allergy = set(ast.literal_eval(row['allergy']))
       keywords = set(ast.literal_eval(row['keywords']))
       
       #create food

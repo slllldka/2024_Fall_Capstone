@@ -222,12 +222,15 @@ def foodText(request):
         allergy_list.append(allergy_name['name'])
     
     updated_food_data_df['positive_food_count'] = updated_food_data_df['keywords'].apply(
-        lambda keywords: -2 if any(keyword.strip() in allergy_list for keyword in keywords.split(','))
-        else -1 if any(keyword.strip() in negative_word for keyword in keywords.split(','))
-        else sum(1 for keyword in keywords.split(',') if keyword.strip() in positive_word)
+        lambda keywords: -1 if any(keyword in keywords for keyword in negative_word) 
+        else sum(1 for keyword in positive_word if keyword in keywords)
+    )
+    
+    updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+        lambda row: -2 if any(allergy in row['allergy'] for allergy in allergy_list) else row['positive_food_count'],axis=1
     )
 
-    sorted_df = updated_food_data_df.sort_values(by='positive_food_count', ascending=False)
+    sorted_df = updated_food_data_df.sample(frac=1, random_state=42).sort_values(by='positive_food_count', ascending=False).reset_index(drop=True)
     food_list = sorted_df['english_name'].head(10).tolist()
     print(food_list)
 
