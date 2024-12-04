@@ -96,8 +96,7 @@ const Register: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
-    backgroundColor: '#262626',
+    backgroundColor: '#1A1A1A',
   },
   body: {
     flex: 90,
