@@ -19,6 +19,7 @@ urlpatterns = [
     path('food_info', foodInfo, name='foodInfo'),
     path('fridge_image', fridgeImage, name='fridgeImage'),
     path('select_food', selectFood, name='selectFood'),
+    path('remain_calorie', remainCalorie, name='remainCalorie'),
     ###path('login', login, name = 'login'),
     ###path('user/id/<int:id>', UserID.as_view(),name ='id')
     # path('analyze/', FoodTextAnalysis.as_view(), name='food-text-analysis'),
