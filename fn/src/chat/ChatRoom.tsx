@@ -35,12 +35,7 @@ interface FoodInfo {
   allergies: string[];
 }
 
-const GRADIENT_COLORS = [
-  ['#521056', '#FF8E8E'], // 보라/핑크
-  ['#4ECDC4', '#821776'], // 민트/보라
-  ['#6C5CE7', '#821776'], // 보라/보라
-  ['#F9C74F', '#884732'], // 노랑/브라운
-];
+const GRADIENT_COLORS = [['#616161', '#515151']];
 
 export default function ChatRoom(): React.ReactElement {
   const navigation = useNavigation();
