@@ -81,6 +81,7 @@ class SelectedFood(models.Model):
   user_id = models.ForeignKey(User, to_field = 'id', on_delete=models.CASCADE)
   date_time = models.DateTimeField(default=timezone.now)
   food_id = models.ForeignKey(Food, to_field = 'id', on_delete=models.CASCADE)
+  calorie = models.IntegerField(default=0)
   
   class Meta:
       constraints = [
