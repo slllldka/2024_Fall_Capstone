@@ -95,58 +95,59 @@ class FiveDayCalorie(models.Model):
   
 @receiver(post_migrate)
 def add_default_foods(sender, **kwargs):
-  if Food.objects.count() == 85:
+  if Food.objects.count() >= 85:
     return
   else:
     Food.objects.all().delete()
     Ingredient.objects.all().delete()
     Allergy.objects.all().delete()
   
-  file_path = os.path.join(os.path.dirname(__file__), 'updated_food_data.csv')
-  with open(file_path, mode='r', encoding='utf-8') as file:
-    reader = csv.DictReader(file)
-    
-    dict_ingredient = {}
-    dict_allergy = {}
-    
-    for row in reader:
-      english_name = row['english_name']
-      Characteristic = set(ast.literal_eval(row['Characteristic']))
-      cuisine = row['cuisine']
-      category = set(ast.literal_eval(row['category']))
-      English_ingredient = set(ast.literal_eval(row['English_ingredient']))
-      description = row['description']
-      vegetarians = row[' vegetarians']
-      allergy = set(ast.literal_eval(row['allergy']))
-      keywords = set(ast.literal_eval(row['keywords']))
+    file_path = os.path.join(os.path.dirname(__file__), 'updated_food_data.csv')
+    with open(file_path, mode='r', encoding='utf-8') as file:
+      reader = csv.DictReader(file)
       
-      #create food
-      food = Food.objects.create(name=english_name, cuisine=cuisine
-                                 , description=description, vegan=vegetarians)
-      #characteristic
-      for c in Characteristic:
-        FoodCharacteristic.objects.create(food_id=food, characteristic=c)
+      dict_ingredient = {}
+      dict_allergy = {}
       
-      #category
-      for c in category:
-        FoodCategory.objects.create(food_id=food, category=c)
-      
-      #ingredient
-      for i in English_ingredient:
-        if i not in dict_ingredient:
-          dict_ingredient[i] = Ingredient.objects.create(name=i)
-        IngredientInFood.objects.create(ingredient_id=dict_ingredient[i]
-                                        , food_id=food)
-      
-      #allergy
-      for a in allergy:
-        if a not in dict_allergy:
-          dict_allergy[a] = Allergy.objects.create(name=a)
-        FoodAllergy.objects.create(food_id=food
-                                   , allergy_id=dict_allergy[a])
-      
-      #keywords
-      for k in keywords:
-        FoodKeyword.objects.create(food_id=food, keyword=k)
-      
-      print(english_name)
+      for row in reader:
+        english_name = row['english_name']
+        Characteristic = set(ast.literal_eval(row['Characteristic']))
+        cuisine = row['cuisine']
+        category = set(ast.literal_eval(row['category']))
+        English_ingredient = set(ast.literal_eval(row['English_ingredient']))
+        description = row['description']
+        vegetarians = row[' vegetarians']
+        allergy = set(ast.literal_eval(row['allergy']))
+        keywords = set(ast.literal_eval(row['keywords']))
+        calorie = row['Calories']
+        
+        #create food
+        food = Food.objects.create(name=english_name, calorie=calorie, cuisine=cuisine
+                                  , description=description, vegan=vegetarians)
+        #characteristic
+        for c in Characteristic:
+          FoodCharacteristic.objects.create(food_id=food, characteristic=c)
+        
+        #category
+        for c in category:
+          FoodCategory.objects.create(food_id=food, category=c)
+        
+        #ingredient
+        for i in English_ingredient:
+          if i not in dict_ingredient:
+            dict_ingredient[i] = Ingredient.objects.create(name=i)
+          IngredientInFood.objects.create(ingredient_id=dict_ingredient[i]
+                                          , food_id=food)
+        
+        #allergy
+        for a in allergy:
+          if a not in dict_allergy:
+            dict_allergy[a] = Allergy.objects.create(name=a)
+          FoodAllergy.objects.create(food_id=food
+                                    , allergy_id=dict_allergy[a])
+        
+        #keywords
+        for k in keywords:
+          FoodKeyword.objects.create(food_id=food, keyword=k)
+        
+        print(english_name)

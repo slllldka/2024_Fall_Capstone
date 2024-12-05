@@ -31,6 +31,8 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 from sklearn.metrics.pairwise import cosine_similarity
 
+import openai
+
 #from .models import User
 from .models import *
 from exercise.models import *
@@ -223,7 +225,6 @@ def foodText(request):
     
     updated_food_data_df['keywords_list'] = updated_food_data_df['keywords'].apply(ast.literal_eval)
     updated_food_data_df['allergy_list'] = updated_food_data_df['allergy'].apply(ast.literal_eval)
-
     updated_food_data_df['Characteristic_list'] = updated_food_data_df['Characteristic'].apply(ast.literal_eval)
     updated_food_data_df['category_list'] = updated_food_data_df['category'].apply(ast.literal_eval)
     updated_food_data_df['English_ingredient_list'] = updated_food_data_df['English_ingredient'].apply(ast.literal_eval)
@@ -232,32 +233,19 @@ def foodText(request):
         lambda keywords: -1 if any(keyword in keywords for keyword in negative_word) 
         else sum(1 for keyword in positive_word if keyword in keywords)
     )
-
     updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
-        lambda row: row['positive_food_count'] + sum(keyword in row['Characteristic_list'] for keyword in positive_word),axis=1
-    )
-
-    updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
-        lambda row: row['positive_food_count'] + sum(keyword in row['category_list'] for keyword in positive_word),axis=1
+        lambda row: -1 if any(keyword in row['Characteristic_list'] for keyword in negative_word)  
+        else row['positive_food_count'] + sum(keyword in row['Characteristic_list'] for keyword in positive_word),axis=1
     )
 
     updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
-        lambda row: row['positive_food_count'] + sum(keyword in row['English_ingredient_list'] for keyword in positive_word),axis=1
+        lambda row: -1 if any(keyword in row['category_list'] for keyword in negative_word)  
+        else row['positive_food_count'] + sum(keyword in row['category_list'] for keyword in positive_word),axis=1
     )
 
-    updated_food_data_df['positive_food_count'] = updated_food_data_df['Characteristic_list'].apply(
-        lambda characteristic: -1 if any(keyword in characteristic for keyword in negative_word) 
-        else updated_food_data_df['positive_food_count']
-    )
-
-    updated_food_data_df['positive_food_count'] = updated_food_data_df['category_list'].apply(
-        lambda categories: -1 if any(keyword in categories for keyword in negative_word) 
-        else updated_food_data_df['positive_food_count']
-    )
-
-    updated_food_data_df['positive_food_count'] = updated_food_data_df['English_ingredient_list'].apply(
-        lambda ingredients: -1 if any(keyword in ingredients for keyword in negative_word) 
-        else updated_food_data_df['positive_food_count']
+    updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+        lambda row: -1 if any(keyword in row['English_ingredient_list'] for keyword in negative_word)  
+        else row['positive_food_count'] + sum(keyword in row['English_ingredient_list'] for keyword in positive_word),axis=1
     )
 
     if('korean' in positive_word or 'Korean' in positive_word):
@@ -289,7 +277,27 @@ def foodText(request):
         updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
             lambda row: -2 if row['temp'] == 'warm' else row['positive_food_count'], axis=1
     )
-
+        
+    if('korean' in negative_word or 'Korean' in negative_word):
+        updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+            lambda row: -2 if row['cuisine'] == 'Korean' else row['positive_food_count'], axis=1
+    )
+        
+    if('japanese' in negative_word or 'Japanese' in negative_word):
+        updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+            lambda row: -2 if row['cuisine'] == 'Japanese' else row['positive_food_count'], axis=1
+    )
+        
+    if('chinese' in negative_word or 'Chinese' in negative_word):
+        updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+            lambda row: -2 if row['cuisine'] == 'Chinese' else row['positive_food_count'], axis=1
+    )       
+        
+    if('western' in negative_word or 'Western' in negative_word):
+        updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+            lambda row: -2 if row['cuisine'] == 'Western' else row['positive_food_count'], axis=1
+    )
+        
     updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
         lambda row: -3 if any(allergy in row['allergy_list'] for allergy in allergy_list) else row['positive_food_count'],axis=1
     )
@@ -399,8 +407,25 @@ def selectFood(request):
         food_name = request.data.get('food')
         try:
             food = Food.objects.get(name=food_name)
-            saved_food = SelectedFood.objects.create(user_id = user, food_id = food)
+            saved_food = SelectedFood.objects.create(user_id = user, food_id = food, calorie=food.calorie)
             
+        except Food.DoesNotExist:
+            response = openai.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "당신은 제공된 음식의 평균적인 1인분 칼로리 값을 반환하는 모델입니다."},
+                    {"role": "user", "content": food_name + "의 1인 평균 칼로리량은 얼마인지 서술해주세요."+
+                    "다른 말 없이 하나의 값만 작성해주시면 됩니다." + "kcal도 안써주셔도 됩니다."}
+                ]
+            )
+
+            generated_answer = response.choices[0].message.content
+            print(generated_answer)
+            
+            #generated_answer = int라고 가정
+            food = Food.objects.create(name=food_name, calorie=generated_answer)
+            saved_food = SelectedFood.objects.create(user_id = user, food_id = food, calorie=food.calorie)
+        finally:
             selected_food_count = SelectedFood.objects.filter(user_id=user.id).count()
             if selected_food_count % 15 == 0:
                 foodSet15 = SelectedFood.objects.filter(user_id=user.id).order_by('-date_time')[:15]
@@ -412,8 +437,7 @@ def selectFood(request):
                 calculate_calorie_bound(user)
                 
             return Response({"success":True}, status=status.HTTP_201_CREATED)
-        except Food.DoesNotExist:
-            return Response({'error':'food is wrong'}, status=status.HTTP_400_BAD_REQUEST)
+            
 
 def calculate_calorie_bound(user):
     calorieCount = FiveDayCalorie.objects.filter(user_id=user.id).count()
