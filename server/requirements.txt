@@ -21,4 +21,5 @@ tokenizers>=0.15.0
 sentencepiece>=0.1.99
 sentence-transformers>=2.2.2
 transformers>=4.35.2
+openai>=0.10.0
 

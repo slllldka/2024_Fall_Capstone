@@ -410,6 +410,7 @@ def selectFood(request):
             saved_food = SelectedFood.objects.create(user_id = user, food_id = food, calorie=food.calorie)
             
         except Food.DoesNotExist:
+            #openai key
             response = openai.chat.completions.create(
                 model="gpt-4",
                 messages=[
@@ -417,6 +418,7 @@ def selectFood(request):
                     {"role": "user", "content": food_name + "의 1인 평균 칼로리량은 얼마인지 서술해주세요."+
                     "다른 말 없이 하나의 값만 작성해주시면 됩니다." + "kcal도 안써주셔도 됩니다."}
                 ]
+                
             )
 
             generated_answer = response.choices[0].message.content
