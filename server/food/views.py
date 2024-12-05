@@ -18,7 +18,7 @@ from datetime import date, timedelta
 
 from django.db import IntegrityError
 from django.db.models import Sum
-
+import ast
 import pandas as pd
 import nltk
 from nltk.corpus import stopwords
@@ -221,13 +221,26 @@ def foodText(request):
         allergy_name = Allergy.objects.filter(id=allergy['allergy_id']).values('name').get()
         allergy_list.append(allergy_name['name'])
     
-    updated_food_data_df['positive_food_count'] = updated_food_data_df['keywords'].apply(
+    updated_food_data_df['keywords_list'] = updated_food_data_df['keywords'].apply(ast.literal_eval)
+    updated_food_data_df['allergy_list'] = updated_food_data_df['allergy'].apply(ast.literal_eval)
+
+    updated_food_data_df['positive_food_count'] = updated_food_data_df['keywords_list'].apply(
         lambda keywords: -1 if any(keyword in keywords for keyword in negative_word) 
         else sum(1 for keyword in positive_word if keyword in keywords)
     )
     
+    if('cold' in negative_word or 'warm' in positive_word):
+        updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+            lambda row: -2 if row['temp'] == 'cold' else row['positive_food_count'], axis=1
+        )
+
+    if('warm' in negative_word or 'cold' in positive_word):
+        updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+            lambda row: -2 if row['temp'] == 'warm' else row['positive_food_count'], axis=1
+        )
+
     updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
-        lambda row: -2 if any(allergy in row['allergy'] for allergy in allergy_list) else row['positive_food_count'],axis=1
+        lambda row: -3 if any(allergy in row['allergy_list'] for allergy in allergy_list) else row['positive_food_count'],axis=1
     )
 
     sorted_df = updated_food_data_df.sample(frac=1, random_state=42).sort_values(by='positive_food_count', ascending=False).reset_index(drop=True)

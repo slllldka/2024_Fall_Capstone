@@ -72,12 +72,12 @@ const Register: React.FC = () => {
 
         <SafeAreaView style={styles.checkboxContainer}>
           <CheckBox
-            value={form.gender === '남'}
+            value={form.gender === 'male'}
             onValueChange={value => handleChange('gender', value ? '남' : '')}
           />
           <Text style={styles.label}>Man</Text>
           <CheckBox
-            value={form.gender === '여'}
+            value={form.gender === 'female'}
             onValueChange={value => handleChange('gender', value ? '여' : '')}
           />
           <Text style={styles.label}>Woman</Text>
