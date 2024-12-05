@@ -55,57 +55,49 @@ export default function Main(): React.ReactElement {
     }
   };
 
-  let flag = false;
   useEffect(() => {
-    const checkUserStatus = async () => {
+    const checkUserStatusSequentially = async () => {
       try {
-        await fetchUserInfo();
-        console.log('Fetched user info:', userInfo);
-        console.log('');
-        if (userInfo) {
-          if (!userInfo.registered_allergy) {
-            console.log('Opening allergy modal');
-            setAllergyModalVisible(true);
-            flag = !flag;
-          } else if (!userInfo.registered_body_info) {
-            console.log('Opening body info modal');
-            setShowBodyInfoModal(true);
-          }
+        console.log('Checking allergies...');
+        const allergyResponse = await api.get('food/user_allergy');
+        console.log('Allergies:', allergyResponse.data);
+        if (allergyResponse.data.allergies.length === 0) {
+          setAllergyModalVisible(true);
+          return; // 이후 단계를 실행하지 않고 종료
         }
-      } catch (error: any) {
-        console.log(error);
-      }
-    };
 
-    checkUserStatus();
-  }, [flag, userInfo?.registered_allergy, userInfo?.registered_body_info]);
+        console.log('Checking body info...');
+        const bodyInfoResponse = await api.get('exercise/body_info');
+        console.log('Body Info:', bodyInfoResponse.data);
+        if (bodyInfoResponse.data.body_info && bodyInfoResponse.data.body_info.length === 0) {
+          setShowBodyInfoModal(true);
 
-  useEffect(() => {
-    const checkWeight = async () => {
-      try {
-        const response = await api.get('/exercise/weight');
-        console.log('Weight:', response.data.weights);
+          return; // 이후 단계를 실행하지 않고 종료
+        }
 
-        if (response.data.weights && response.data.weights.length > 0) {
-          const latestDate = new Date(response.data.weights[0].date);
+        console.log('Checking weight...');
+        const weightResponse = await api.get('/exercise/weight');
+
+        console.log('Weight:', weightResponse.data);
+        if (weightResponse.data.weights && weightResponse.data.weights.length > 0) {
+          const latestDate = new Date(weightResponse.data.weights[0].date);
           const today = new Date();
           const diffDays = Math.floor(
             (today.getTime() - latestDate.getTime()) / (1000 * 60 * 60 * 24),
           );
 
           if (diffDays >= 5) {
-            navigation.navigate('Profile');
+            setShowWeightModal(true);
           }
+        } else {
+          setShowWeightModal(true);
         }
       } catch (error: any) {
-        console.error('체중 정보 조회 실패:', error);
-        if (error.response && error.response.status === 404) {
-          setShowWeightModal(true);
-          flag = !flag;
-        }
+        console.error('Error during sequential checks:', error);
       }
     };
-    checkWeight();
+
+    checkUserStatusSequentially();
   }, []);
 
   const menuItems = [

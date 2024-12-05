@@ -46,6 +46,7 @@ export default function ChatRoom(): React.ReactElement {
   const [selectedFoodInfo, setSelectedFoodInfo] = useState<FoodInfo | null>(null);
   const [showFoodModal, setShowFoodModal] = useState(false);
   const [selectedFoodName, setSelectedFoodName] = useState<string>('');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0)).current;
@@ -192,6 +193,10 @@ export default function ChatRoom(): React.ReactElement {
     </TouchableOpacity>
   );
 
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   const FoodInfoModal = () => (
     <Modal visible={showFoodModal} transparent animationType='slide'>
       <View style={styles.modalContainer}>
@@ -200,8 +205,15 @@ export default function ChatRoom(): React.ReactElement {
 
           <ScrollView style={styles.modalScroll} showsVerticalScrollIndicator={false}>
             <Text style={styles.sectionTitle}>설명</Text>
-            <Text style={styles.description}>{selectedFoodInfo?.description}</Text>
-
+            <Text style={styles.description} numberOfLines={isExpanded ? undefined : 3}>
+              {selectedFoodInfo?.description}
+            </Text>
+            {selectedFoodInfo?.description &&
+              selectedFoodInfo.description.split('\n').length > 3 && (
+                <TouchableOpacity onPress={toggleExpanded}>
+                  <Text style={styles.moreButton}>{isExpanded ? '접기' : '더보기'}</Text>
+                </TouchableOpacity>
+              )}
             <Text style={styles.sectionTitle}>재료</Text>
             <View style={styles.ingredientsList}>
               {selectedFoodInfo?.ingredients.map((ingredient, index) => (
@@ -435,6 +447,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     lineHeight: 24,
+  },
+  moreButton: {
+    color: '#007AFF',
+    marginTop: 5,
   },
   ingredientsList: {
     marginTop: 5,
