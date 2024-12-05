@@ -224,20 +224,71 @@ def foodText(request):
     updated_food_data_df['keywords_list'] = updated_food_data_df['keywords'].apply(ast.literal_eval)
     updated_food_data_df['allergy_list'] = updated_food_data_df['allergy'].apply(ast.literal_eval)
 
+    updated_food_data_df['Characteristic_list'] = updated_food_data_df['Characteristic'].apply(ast.literal_eval)
+    updated_food_data_df['category_list'] = updated_food_data_df['category'].apply(ast.literal_eval)
+    updated_food_data_df['English_ingredient_list'] = updated_food_data_df['English_ingredient'].apply(ast.literal_eval)
+
     updated_food_data_df['positive_food_count'] = updated_food_data_df['keywords_list'].apply(
         lambda keywords: -1 if any(keyword in keywords for keyword in negative_word) 
         else sum(1 for keyword in positive_word if keyword in keywords)
     )
-    
+
+    updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+        lambda row: row['positive_food_count'] + sum(keyword in row['Characteristic_list'] for keyword in positive_word),axis=1
+    )
+
+    updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+        lambda row: row['positive_food_count'] + sum(keyword in row['category_list'] for keyword in positive_word),axis=1
+    )
+
+    updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+        lambda row: row['positive_food_count'] + sum(keyword in row['English_ingredient_list'] for keyword in positive_word),axis=1
+    )
+
+    updated_food_data_df['positive_food_count'] = updated_food_data_df['Characteristic_list'].apply(
+        lambda characteristic: -1 if any(keyword in characteristic for keyword in negative_word) 
+        else updated_food_data_df['positive_food_count']
+    )
+
+    updated_food_data_df['positive_food_count'] = updated_food_data_df['category_list'].apply(
+        lambda categories: -1 if any(keyword in categories for keyword in negative_word) 
+        else updated_food_data_df['positive_food_count']
+    )
+
+    updated_food_data_df['positive_food_count'] = updated_food_data_df['English_ingredient_list'].apply(
+        lambda ingredients: -1 if any(keyword in ingredients for keyword in negative_word) 
+        else updated_food_data_df['positive_food_count']
+    )
+
+    if('korean' in positive_word or 'Korean' in positive_word):
+        updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+            lambda row: -2 if row['cuisine'] in ['Japanese', 'Chinese', 'Western'] else row['positive_food_count'], axis=1
+    )
+        
+    if('japanese' in positive_word or 'Japanese' in positive_word):
+        updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+            lambda row: -2 if row['cuisine'] in ['Korean', 'Chinese', 'Western'] else row['positive_food_count'], axis=1
+    )
+        
+    if('chinese' in positive_word or 'Chinese' in positive_word):
+        updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+            lambda row: -2 if row['cuisine'] in ['Japanese', 'Korean', 'Western'] else row['positive_food_count'], axis=1
+    )
+        
+    if('western' in positive_word or 'Western' in positive_word):
+        updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
+            lambda row: -2 if row['cuisine'] in ['Japanese', 'Chinese', 'Korean'] else row['positive_food_count'], axis=1
+    )
+        
     if('cold' in negative_word or 'warm' in positive_word):
         updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
             lambda row: -2 if row['temp'] == 'cold' else row['positive_food_count'], axis=1
-        )
+    )
 
     if('warm' in negative_word or 'cold' in positive_word):
         updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
             lambda row: -2 if row['temp'] == 'warm' else row['positive_food_count'], axis=1
-        )
+    )
 
     updated_food_data_df['positive_food_count'] = updated_food_data_df.apply(
         lambda row: -3 if any(allergy in row['allergy_list'] for allergy in allergy_list) else row['positive_food_count'],axis=1

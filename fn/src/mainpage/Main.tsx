@@ -58,18 +58,22 @@ export default function Main(): React.ReactElement {
   let flag = false;
   useEffect(() => {
     const checkUserStatus = async () => {
-      await fetchUserInfo();
-      console.log('Fetched user info:', userInfo);
-      console.log('');
-      if (userInfo) {
-        if (!userInfo.registered_allergy) {
-          console.log('Opening allergy modal');
-          setAllergyModalVisible(true);
-          flag = true;
-        } else if (!userInfo.registered_body_info) {
-          console.log('Opening body info modal');
-          setShowBodyInfoModal(true);
+      try {
+        await fetchUserInfo();
+        console.log('Fetched user info:', userInfo);
+        console.log('');
+        if (userInfo) {
+          if (!userInfo.registered_allergy) {
+            console.log('Opening allergy modal');
+            setAllergyModalVisible(true);
+            flag = !flag;
+          } else if (!userInfo.registered_body_info) {
+            console.log('Opening body info modal');
+            setShowBodyInfoModal(true);
+          }
         }
+      } catch (error: any) {
+        console.log(error);
       }
     };
 
@@ -97,6 +101,7 @@ export default function Main(): React.ReactElement {
         console.error('체중 정보 조회 실패:', error);
         if (error.response && error.response.status === 404) {
           setShowWeightModal(true);
+          flag = !flag;
         }
       }
     };
