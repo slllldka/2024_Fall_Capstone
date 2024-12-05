@@ -31,7 +31,7 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 from sklearn.metrics.pairwise import cosine_similarity
 
-import ast
+import openai
 
 #from .models import User
 from .models import *
@@ -407,8 +407,25 @@ def selectFood(request):
         food_name = request.data.get('food')
         try:
             food = Food.objects.get(name=food_name)
-            saved_food = SelectedFood.objects.create(user_id = user, food_id = food)
+            saved_food = SelectedFood.objects.create(user_id = user, food_id = food, calorie=food.calorie)
             
+        except Food.DoesNotExist:
+            response = openai.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "당신은 제공된 음식의 평균적인 1인분 칼로리 값을 반환하는 모델입니다."},
+                    {"role": "user", "content": food_name + "의 1인 평균 칼로리량은 얼마인지 서술해주세요."+
+                    "다른 말 없이 하나의 값만 작성해주시면 됩니다." + "kcal도 안써주셔도 됩니다."}
+                ]
+            )
+
+            generated_answer = response.choices[0].message.content
+            print(generated_answer)
+            
+            #generated_answer = int라고 가정
+            food = Food.objects.create(name=food_name, calorie=generated_answer)
+            saved_food = SelectedFood.objects.create(user_id = user, food_id = food, calorie=food.calorie)
+        finally:
             selected_food_count = SelectedFood.objects.filter(user_id=user.id).count()
             if selected_food_count % 15 == 0:
                 foodSet15 = SelectedFood.objects.filter(user_id=user.id).order_by('-date_time')[:15]
@@ -420,8 +437,7 @@ def selectFood(request):
                 calculate_calorie_bound(user)
                 
             return Response({"success":True}, status=status.HTTP_201_CREATED)
-        except Food.DoesNotExist:
-            return Response({'error':'food is wrong'}, status=status.HTTP_400_BAD_REQUEST)
+            
 
 def calculate_calorie_bound(user):
     calorieCount = FiveDayCalorie.objects.filter(user_id=user.id).count()

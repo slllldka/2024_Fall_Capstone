@@ -57,8 +57,6 @@ def weight(request):
     user = request.user
     if request.method == 'GET':
         userWeightSet = UserWeight.objects.filter(user_id = user.id).order_by('-date')[:30]
-        if len(userWeightSet) == 0:
-            return Response({"error":"weight does not exist"}, status = status.HTTP_404_NOT_FOUND)
         userWeightList = []
         for userWeight in userWeightSet:
             userWeightList.append(model_to_dict(userWeight, fields=['date', 'weight']))
