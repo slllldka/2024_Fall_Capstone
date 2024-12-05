@@ -14,7 +14,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 
 from django.utils import timezone
-from datetime import date, timedelta
+from datetime import date, time, datetime, timedelta
 
 from django.db import IntegrityError
 from django.db.models import Sum
@@ -339,10 +339,11 @@ def selectFood(request):
             
             selected_food_count = SelectedFood.objects.filter(user_id=user.id).count()
             if selected_food_count % 15 == 0:
-                foodSet15 = SelectedFood.objects.filter(user_id=user.id).order_by('-date_time').values('food_id')[:15]
+                foodSet15 = SelectedFood.objects.filter(user_id=user.id).order_by('-date_time')[:15]
                 calorieSum = 0
                 for food in foodSet15:
-                    calorieSum += Food.objects.get(id = food['food_id']).calorie
+                    calorieSum += Food.objects.get(id = food.food_id).calorie
+                    #food.calorie
                 FiveDayCalorie.objects.create(user_id = user, date=saved_food.date_time, calorie=calorieSum)
                 calculate_calorie_bound(user)
                 
@@ -360,7 +361,7 @@ def calculate_calorie_bound(user):
         for i in range(0, calorieCount - 1):
             calorie1 = fiveDayCalorieSet[i].calorie
             calorie2 = fiveDayCalorieSet[i+1].calorie
-            exercises1 = UserExerciseDone.objects.filter(
+            exercises1 = UserExerciseDone.objects.filter(user_id = user.id,
                 date__gte=fiveDayCalorieSet[i].date - timedelta(days=4), date__lte=fiveDayCalorieSet[i].date)
             exerciseCalorie1 = 0
             for exercise in exercises1:
@@ -368,7 +369,7 @@ def calculate_calorie_bound(user):
                     exerciseCalorie1 += exercise.exercise_id.calorie_male
                 elif user.gender == 'female':
                     exerciseCalorie1 += exercise.exercise_id.calorie_female
-            exercises2 = UserExerciseDone.objects.filter(
+            exercises2 = UserExerciseDone.objects.filter(user_id = user.id,
                 date__gte=fiveDayCalorieSet[i+1].date - timedelta(days=4), date__lte=fiveDayCalorieSet[i+1].date)
             exerciseCalorie2 = 0
             for exercise in exercises2:
@@ -389,6 +390,28 @@ def calculate_calorie_bound(user):
             calorie_bound = sum(calorieList)/len(calorieList)
             user.calorie_bound = calorie_bound / 5
             user.save()
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def remainCalorie(request):
+    user = request.user
+    remain_calorie = 0
+    if user.calorie_bound:
+        #get today's date.
+        date = timezone.now().date()
+        #range from date:00:00:00 to 23:59:59
+        date_start = datetime.combine(date, time(0, 0, 0))
+        date_end = datetime.combine(date, time(23, 59, 59))
+        #find
+        food_set = SelectedFood.objects.filter(user_id = user.id, date_time__gte=date_start, date_time__lte=date_end)
+        #calculate sum of calorie
+        today_calorie_sum = 0
+        for food in food_set:
+            today_calorie_sum += food.calorie
+        #sub from calorie bound
+        remain_calorie = user.calorie_bound - today_calorie_sum
+    
+    return Response({'remain_calorie':remain_calorie})
 
 def preprocess_text(text):
     lemmatizer = WordNetLemmatizer()
