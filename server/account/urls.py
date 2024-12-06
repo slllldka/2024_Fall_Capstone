@@ -9,8 +9,10 @@ router.register('User', views.UserViewSet) #itemviewset 과 item이라는 router
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('login', login, name = 'login'),
+    path('email_request', emailVerificationRequest, name = 'emailVerificationRequest'),
+    path('email_response', emailVerificationResponse, name = 'emailVerificationResponse'),
     path('signup', signup, name = 'signup'),
+    path('login', login, name = 'login'),
     path('valid', valid, name = 'valid'),
     path('refresh', refresh, name = 'refresh'),
     path('myinfo', myinfo, name = 'myinfo'),
