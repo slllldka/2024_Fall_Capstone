@@ -407,9 +407,6 @@ def selectFood(request):
             return Response({'error':'foods do not exist'}, status=status.HTTP_404_NOT_FOUND)
         
     elif request.method == 'POST':
-        if openai.api_key is None:
-            return Response({'error':'No API KEY'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
         user = request.user
         food_name = request.data.get('food')
         try:
@@ -417,6 +414,8 @@ def selectFood(request):
             saved_food = SelectedFood.objects.create(user_id = user, food_id = food, calorie=food.calorie)
             
         except Food.DoesNotExist:
+            if openai.api_key is None:
+                return Response({'error':'No API KEY'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             response = openai.chat.completions.create(
                 model="gpt-4",
                 messages=[
