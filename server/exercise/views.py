@@ -207,9 +207,9 @@ def bodyMetrics(request):
 
 def newPlan(user):
     muscleMassSet = UserMuscle.objects.get(user_id = user.id)
-    armsMuscleMass = muscleMassSet.right_arm_muscle_mass + muscleMassSet.left_arm_muscle_mass
+    armsMuscleMass = (muscleMassSet.right_arm_muscle_mass + muscleMassSet.left_arm_muscle_mass)/2
     bodyMuscleMass = muscleMassSet.body_muscle_mass
-    legsMuscleMass = muscleMassSet.right_leg_muscle_mass + muscleMassSet.left_leg_muscle_mass
+    legsMuscleMass = (muscleMassSet.right_leg_muscle_mass + muscleMassSet.left_leg_muscle_mass)/2
     diff1 = bodyMuscleMass - legsMuscleMass
     main = 0
     if 10 <= diff1 <= 20:
