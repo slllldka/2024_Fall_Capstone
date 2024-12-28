@@ -1,0 +1,5 @@
+/account/account/settings.py
+/exercise/exercise/settings.py
+/food/food/settings.py
+/food_exercise/food_exercise/settings.py
+/.env
